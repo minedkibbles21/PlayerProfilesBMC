@@ -3,7 +3,7 @@ package com.muhammaddaffa.playerprofiles.commands.subcommands;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.commands.abstraction.SubCommand;
-import com.muhammaddaffa.mdlib.utils.Common;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class OpenProfileCommand extends SubCommand {
         // The full command is /playerprofiles openprofile (target) (for-player) - args length = 3
         // So we want to tell the command sender if the the args doesn't enough
         if(args.length < 3){
-            sender.sendMessage(Common.color("&cUsage: /playerprofiles openprofile (target) (for-player)"));
+            sender.sendMessage(Utils.color("&cUsage: /playerprofiles openprofile (target) (for-player)"));
             return;
         }
         // Get the target as Player object
@@ -45,7 +45,7 @@ public class OpenProfileCommand extends SubCommand {
         // Check if the target is not valid player
         if(target == null){
             // If the target is not valid player, we want to warn the command sender
-            sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{player}", args[1])));
             return;
@@ -56,7 +56,7 @@ public class OpenProfileCommand extends SubCommand {
         // Check if the player is not valid player
         if(player == null){
             // If the player is not valid player, we want to warn the command sender
-            sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{player}", args[2])));
             return;

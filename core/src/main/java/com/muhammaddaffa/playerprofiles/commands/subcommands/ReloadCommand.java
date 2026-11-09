@@ -3,7 +3,7 @@ package com.muhammaddaffa.playerprofiles.commands.subcommands;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.commands.abstraction.SubCommand;
-import com.muhammaddaffa.mdlib.utils.Common;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class ReloadCommand extends SubCommand {
         // Call the reload method from the PlayerProfiles class
         plugin.reloadAllThing();
         // Send the message to the command sender
-        sender.sendMessage(Common.color(ConfigValue.RELOAD
+        sender.sendMessage(Utils.color(ConfigValue.RELOAD
                 .replace("{prefix}", ConfigValue.PREFIX)));
     }
 

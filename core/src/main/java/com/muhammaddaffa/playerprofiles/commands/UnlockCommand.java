@@ -1,11 +1,15 @@
 package com.muhammaddaffa.playerprofiles.commands;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -49,64 +53,34 @@ public class UnlockCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        // Check if the args length is 0 (/unlockprofile)
-        if(args.length == 0){
-            // Permission: playerprofiles.unlockprofile
-            if(!(sender.hasPermission("playerprofiles.unlockprofile"))){
-                sender.sendMessage(Common.color(ConfigValue.NO_PERMISSION
-                        .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{permission}", "playerprofiles.unlockprofile")));
-                return true;
-            }
-            // If the sender is not a player (the sender is console)
-            if(!(sender instanceof Player)){
-                // Send console a usage message and return the code
-                sender.sendMessage(Common.color("&cUsage: /unlockprofile (player)"));
-                return true;
-            }
-            // After the check above, we can get the Player object from the sender
-            Player player = (Player) sender;
-            plugin.getProfileManager().unlockProfile(player);
-            // Send a lock profile message to player
-            player.sendMessage(Common.color(ConfigValue.UNLOCK_PROFILE
-                    .replace("{prefix}", ConfigValue.PREFIX)));
-
-        }
-        // Check if args length is 1 (/unlockprofile (player))
-        if(args.length == 1){
-            // Permission: playerprofiles.unlockprofile.others
-            if(!(sender.hasPermission("playerprofiles.unlockprofile.others"))){
-                sender.sendMessage(Common.color(ConfigValue.NO_PERMISSION
-                        .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{permission}", "playerprofiles.unlockprofile.others")));
-                return true;
-            }
-            // Get the player object from args[0]
-            Player player = Bukkit.getPlayer(args[0]);
-            // Check if the player is not valid or online
-            if(player == null){
-                // Send an invalid player message
-                sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
-                        .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{player}", args[0])));
-                // Stop the code
-                return true;
-            }
-            // The player is valid and everything's going well
-            // Now, we finally locked the player's profile
-            plugin.getProfileManager().unlockProfile(player);
-            // And send the message to the command sender
-            sender.sendMessage(Common.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+        if (!sender.hasPermission("playerprofiles.admin") && !sender.hasPermission("playerprofiles.unlockprofile.others")) {
+            sender.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
                     .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", player.getName())));
+                    .replace("{permission}", "playerprofiles.admin")));
+            return true;
         }
+        if (args.length == 0) {
+            sender.sendMessage(Utils.color("&cUsage: /unlockprofile <player>"));
+            return true;
+        }
+        Player player = Bukkit.getPlayer(args[0]);
+        if (player == null) {
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{player}", args[0])));
+            return true;
+        }
+        plugin.getProfileManager().unlockProfile(player);
+        sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+                .replace("{prefix}", ConfigValue.PREFIX)
+                .replace("{player}", player.getName())));
         return true;
     }
 
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if(args.length == 1 && sender.hasPermission("playerprofiles.unlockprofile.others")){
+        if (args.length == 1 && (sender.hasPermission("playerprofiles.admin") || sender.hasPermission("playerprofiles.unlockprofile.others"))) {
             return null;
         }
         return new ArrayList<>();

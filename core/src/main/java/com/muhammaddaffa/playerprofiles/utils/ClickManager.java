@@ -1,6 +1,5 @@
 package com.muhammaddaffa.playerprofiles.utils;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class ClickManager {
 
-    private static final Pattern pattern = Pattern.compile("(?<=\\[CONSOLE\\] |\\[PLAYER\\] |\\[SOUND\\] |\\[MESSAGE\\] |\\[MESSAGEPLAYER\\] |\\[MESSAGETARGET\\] |\\[OPENGUIMENU\\] |\\[CLOSE\\])");
+    private static final Pattern pattern = Pattern.compile("(?<=\\[CONSOLE\\] |\\[PLAYER\\] |\\[SOUND\\] |\\[MESSAGE\\] |\\[MESSAGEPLAYER\\] |\\[MESSAGETARGET\\] |\\[OPENGUIMENU\\] |\\[ZMENU\\] |\\[ZM\\] |\\[CLOSE\\])");
 
     public static void handleInventoryClick(GUIItem item, Player player, Player target, InventoryClickEvent event){
         handleInventoryClick(item, player, target, event, false);
@@ -75,20 +74,20 @@ public class ClickManager {
         }
         if (tag.equalsIgnoreCase("[MESSAGE] ")) {
             // Send the player a message
-            player.sendMessage(Common.color(finalTask));
+            player.sendMessage(Utils.color(finalTask));
             // Send the target a message
-            target.sendMessage(Common.color(finalTask));
+            target.sendMessage(Utils.color(finalTask));
             return;
         }
         // Check if the tag is MESSAGE
         if(tag.equalsIgnoreCase("[MESSAGEPLAYER] ")) {
             // Send the player a message
-            player.sendMessage(Common.color(finalTask));
+            player.sendMessage(Utils.color(finalTask));
             return;
         }
         if (tag.equalsIgnoreCase("[MESSAGETARGET] ")) {
             // Send the target a message
-            target.sendMessage(Common.color(finalTask));
+            target.sendMessage(Utils.color(finalTask));
             return;
         }
         // Check if the tag is OPENGUIMENU
@@ -105,6 +104,15 @@ public class ClickManager {
             }
             // If the custom gui is valid, open the inventory to the player
             PlayerProfiles.getInstance().getInventoryManager().openInventory(customGUI, player, target, forced);
+            return;
+        }
+        if (tag.equalsIgnoreCase("[ZMENU] ") || tag.equalsIgnoreCase("[ZM] ")) {
+            finalTask = ChatColor.stripColor(finalTask).trim();
+            if (finalTask.contains(" ")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + finalTask);
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + finalTask + " " + player.getName());
+            }
             return;
         }
         // Check if the tag is CLOSE

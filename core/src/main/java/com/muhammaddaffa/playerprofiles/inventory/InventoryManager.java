@@ -1,6 +1,5 @@
 package com.muhammaddaffa.playerprofiles.inventory;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
@@ -9,6 +8,7 @@ import com.muhammaddaffa.playerprofiles.hooks.deluxecombat.HDeluxeCombat;
 import com.muhammaddaffa.playerprofiles.inventory.items.ItemsLoader;
 import com.muhammaddaffa.playerprofiles.manager.DependencyManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUI;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import com.muhammaddaffa.playerprofiles.worldguardwrapper.WorldGuardWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,6 +47,15 @@ public class InventoryManager {
             return false;
         }
         if (!forced && !canView(player, target)) return false;
+        if (customGUI == null && ConfigValue.ZMENU_ENABLED && ConfigValue.ZMENU_PROFILE_MENU != null && !ConfigValue.ZMENU_PROFILE_MENU.isEmpty()) {
+            String menu = Utils.tryParsePAPI(ConfigValue.ZMENU_PROFILE_MENU, player, target).trim();
+            if (menu.contains(" ")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + menu);
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + menu + " " + player.getName());
+            }
+            return true;
+        }
         FileConfiguration config = customGUI == null ? PlayerProfiles.GUI_DEFAULT.getConfig() : customGUI.config();
         try {
             ItemsLoader.validateMenu(config);
@@ -100,6 +109,6 @@ public class InventoryManager {
     }
 
     private void tell(Player player, String message) {
-        player.sendMessage(Common.color(message.replace("{prefix}", ConfigValue.PREFIX)));
+        player.sendMessage(Utils.color(message.replace("{prefix}", ConfigValue.PREFIX)));
     }
 }

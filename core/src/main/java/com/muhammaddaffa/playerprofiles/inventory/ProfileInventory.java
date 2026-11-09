@@ -2,7 +2,6 @@ package com.muhammaddaffa.playerprofiles.inventory;
 
 import com.muhammaddaffa.mdlib.fastinv.FastInv;
 import com.muhammaddaffa.mdlib.task.handleTask.HandleTask;
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Executor;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
@@ -30,7 +29,7 @@ public class ProfileInventory extends FastInv {
 
     public ProfileInventory(List<GUIItem> items, Player player, Player target, int size, String title,
                             FileConfiguration config, boolean forced) {
-        super(size, Utils.tryParsePAPI(Common.color(title), player, target));
+        super(size, Utils.color(Utils.tryParsePAPI(title, player, target)));
         this.config = config;
         this.forced = forced;
         this.targetName = target.getName();
@@ -102,7 +101,7 @@ public class ProfileInventory extends FastInv {
         if (target == null || !target.isOnline() || !player.getWorld().equals(target.getWorld()) ||
                 player.getLocation().distance(target.getLocation()) > ConfigValue.MAXIMUM_DISTANCE) {
             close(player);
-            player.sendMessage(Common.color(ConfigValue.DISTANCE_TOO_FAR
+            player.sendMessage(Utils.color(ConfigValue.DISTANCE_TOO_FAR
                     .replace("{prefix}", ConfigValue.PREFIX).replace("{player}", targetName)));
         }
     }

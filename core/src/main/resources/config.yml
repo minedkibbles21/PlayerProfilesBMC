@@ -13,6 +13,13 @@ options:
     message: "{prefix} &cYou are not allowed to open profile while in combat!"
   shiftClick: true
 
+# Delegate opening player profiles to a zMenu inventory
+# When enabled, /vprofile and shift-right-click will open the configured zMenu inventory directly
+# while preserving all permission, lock, distance, combat, and region checks.
+zmenu:
+  enabled: false
+  profileMenu: "profile"
+
 # This feature is to auto update the placeholder on every item
 # Configuration Explanation:
 # (autoRefresh)
@@ -36,7 +43,7 @@ cooldown:
 # Configuration Explanation:
 # (commandAliases)
 #   (playerProfiles) Aliases for /playerprofiles command (main command)
-#   (profile) Aliases for /profile command
+#   (vprofile) Aliases for /vprofile command
 #   (lockProfile) Aliases for /lockprofile command
 #   (unlockProfile) Aliases for /unlockprofile command
 commandAliases:
@@ -44,9 +51,9 @@ commandAliases:
     - 'playerprofile'
     - 'playerp'
     - 'pp'
-  profile:
+  vprofile:
     - 'viewprofile'
-    - 'p'
+    - 'vp'
   lockProfile:
     - 'profilelock'
     - 'lock'
@@ -106,11 +113,12 @@ messages:
   invalidGUIName: "{prefix} &cThere is no GUI with name '{gui}' &7(See /playerprofiles listgui)"
   listGUI: "{prefix} &7List GUI: &a{gui}"
   help:
-    - "&6&lPlayerProfiles &7- by aglerr"
+    - "&6&lBMCPlayerPoints &7- by MinedKibbles21"
     - "&6- /playerprofiles help &7- shows the help messages"
     - "&6- /playerprofiles reload &7- reload the configuration"
     - "&6- /playerprofiles opengui (player) (target) (gui-name) &7- open custom gui"
     - "&6- /playerprofiles listgui &7- see the list of custom gui names"
-    - "&6- /lockprofile [player] &7- lock your own/others profile"
-    - "&6- /unlockprofile [player] &7- unlock your own/others profile"
-    - "&6- /profile [player] &7- see your own/others profile"
+    - "&6- /lockprofile <player> &7- (Admin) lock a player's profile"
+    - "&6- /unlockprofile <player> &7- (Admin) unlock a player's profile"
+    - "&6- /toggleprofile <player> &7- (Admin) toggle a player's profile lock"
+    - "&6- /vprofile [player] &7- see your own/others profile"

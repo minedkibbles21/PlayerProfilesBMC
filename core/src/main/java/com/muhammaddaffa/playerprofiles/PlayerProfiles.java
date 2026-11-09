@@ -2,7 +2,12 @@ package com.muhammaddaffa.playerprofiles;
 
 import com.muhammaddaffa.mdlib.MDLib;
 import com.muhammaddaffa.mdlib.utils.Config;
-import com.muhammaddaffa.playerprofiles.commands.*;
+import com.muhammaddaffa.playerprofiles.commands.LockCommand;
+import com.muhammaddaffa.playerprofiles.commands.MainCommand;
+import com.muhammaddaffa.playerprofiles.commands.ProfileCommand;
+import com.muhammaddaffa.playerprofiles.commands.ToggleCommand;
+import com.muhammaddaffa.playerprofiles.commands.UnlockCommand;
+import com.muhammaddaffa.playerprofiles.hooks.placeholderapi.PlayerProfilesExpansion;
 
 import com.muhammaddaffa.playerprofiles.inventory.InventoryManager;
 import com.muhammaddaffa.playerprofiles.listeners.PlayerInteract;
@@ -10,13 +15,10 @@ import com.muhammaddaffa.playerprofiles.manager.DependencyManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUIManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGuiCreator;
 import com.muhammaddaffa.playerprofiles.manager.profile.ProfileManager;
-import com.muhammaddaffa.playerprofiles.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PlayerProfiles extends JavaPlugin {
-
-    private static final int BSTATS_ID = 7049;
 
     private static PlayerProfiles instance;
 
@@ -41,6 +43,11 @@ public class PlayerProfiles extends JavaPlugin {
         MDLib.onEnable(this);
         // Check the dependency
         DependencyManager.checkDependency();
+        // Register PlaceholderAPI expansion if present
+        if (DependencyManager.PLACEHOLDER_API) {
+            new PlayerProfilesExpansion(this, "bmcplayerpoints").register();
+            new PlayerProfilesExpansion(this, "playerprofiles").register();
+        }
         // Initialize all config
         initializeConfig();
         // Initialize all custom gui creator
@@ -57,8 +64,7 @@ public class PlayerProfiles extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(playerInteract, this);
         // Register all commands
         registerCommands();
-        // Add bstats metrics
-        new Metrics(this, BSTATS_ID);
+        com.muhammaddaffa.mdlib.utils.Logger.info("&6[BMCPlayerPoints] &eBendersMC Private Build - Authorized for BMC Devs only.");
     }
 
     @Override

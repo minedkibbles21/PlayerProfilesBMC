@@ -4,3 +4,4 @@ dependency-reduced-pom.xml
 core/deps
 *.iml
 .verification/
+.vscode/

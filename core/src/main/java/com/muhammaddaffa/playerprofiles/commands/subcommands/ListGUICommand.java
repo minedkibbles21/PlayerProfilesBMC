@@ -1,9 +1,9 @@
 package com.muhammaddaffa.playerprofiles.commands.subcommands;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.commands.abstraction.SubCommand;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class ListGUICommand extends SubCommand {
         // First, get the list of gui name in comma
         String guiList = String.join(", ", plugin.getCustomGUIManager().getListName());
         // Send the message to the command sender
-        sender.sendMessage(Common.color(ConfigValue.LIST_GUI
+        sender.sendMessage(Utils.color(ConfigValue.LIST_GUI
                 .replace("{prefix}", ConfigValue.PREFIX)
                 .replace("{gui}", guiList)));
     }

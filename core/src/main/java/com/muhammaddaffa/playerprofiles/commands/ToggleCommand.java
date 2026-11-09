@@ -1,11 +1,15 @@
 package com.muhammaddaffa.playerprofiles.commands;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,39 +47,33 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (args.length != 0) {
-            sender.sendMessage(Common.color("&cUsage: /toggleprofile"));
+        if (!sender.hasPermission("playerprofiles.admin") && !sender.hasPermission("playerprofiles.toggleprofile.others")) {
+            sender.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{permission}", "playerprofiles.admin")));
             return true;
         }
-        // Check if the args length is 0 (/lockprofile)
-        if(args.length == 0){
-            // Permission: playerprofiles.lockprofile
-            if(!(sender.hasPermission("playerprofiles.toggleprofile"))){
-                sender.sendMessage(Common.color(ConfigValue.NO_PERMISSION
-                        .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{permission}", "playerprofiles.toggleprofile")));
-                return true;
-            }
-            // If the sender is not a player (the sender is console)
-            if(!(sender instanceof Player)){
-                // Send console a usage message and return the code
-                sender.sendMessage(Common.color("&cOnly players can use /toggleprofile"));
-                return true;
-            }
-            // After the check above, we can get the Player object from the sender
-            Player player = (Player) sender;
-            // Check if player is locked
-            if (plugin.getProfileManager().getOrCreate(player).isLocked()) {
-                plugin.getProfileManager().unlockProfile(player);
-                player.sendMessage(Common.color(ConfigValue.UNLOCK_PROFILE
-                        .replace("{prefix}", ConfigValue.PREFIX)));
-
-            } else {
-                plugin.getProfileManager().lockProfile(player);
-                player.sendMessage(Common.color(ConfigValue.LOCK_PROFILE
-                        .replace("{prefix}", ConfigValue.PREFIX)));
-
-            }
+        if (args.length == 0) {
+            sender.sendMessage(Utils.color("&cUsage: /toggleprofile <player>"));
+            return true;
+        }
+        Player target = Bukkit.getPlayer(args[0]);
+        if (target == null) {
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{player}", args[0])));
+            return true;
+        }
+        if (plugin.getProfileManager().getOrCreate(target).isLocked()) {
+            plugin.getProfileManager().unlockProfile(target);
+            sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{player}", target.getName())));
+        } else {
+            plugin.getProfileManager().lockProfile(target);
+            sender.sendMessage(Utils.color(ConfigValue.LOCK_PROFILE_OTHERS
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{player}", target.getName())));
         }
         return true;
     }
@@ -83,6 +81,9 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        if (args.length == 1 && (sender.hasPermission("playerprofiles.admin") || sender.hasPermission("playerprofiles.toggleprofile.others"))) {
+            return null;
+        }
         return new ArrayList<>();
     }
 

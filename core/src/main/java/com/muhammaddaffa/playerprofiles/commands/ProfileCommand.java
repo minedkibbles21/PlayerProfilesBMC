@@ -1,12 +1,16 @@
 package com.muhammaddaffa.playerprofiles.commands;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.inventory.InventoryManager;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +22,7 @@ import java.util.List;
 
 public class ProfileCommand implements CommandExecutor, TabCompleter {
 
-    private static final String COMMAND_NAME = "profile";
+    private static final String COMMAND_NAME = "vprofile";
 
     private final PlayerProfiles plugin;
     public ProfileCommand(PlayerProfiles plugin){
@@ -31,7 +35,10 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         // Get the file configuration of config.yml
         FileConfiguration config = PlayerProfiles.CONFIG_DEFAULT.getConfig();
         // Get the aliases from the config
-        List<String> aliases = config.getStringList("commandAliases.profile");
+        List<String> aliases = config.getStringList("commandAliases.vprofile");
+        if (aliases.isEmpty()) {
+            aliases = config.getStringList("commandAliases.profile");
+        }
         // Add all aliases to the command
         plugin.getCommand(COMMAND_NAME).getAliases().addAll(aliases);
         // Trying to register the aliases from the config
@@ -43,7 +50,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
 
             bukkitCommandMap.setAccessible(false);
         } catch (Exception ex){
-            Logger.info("&cFailed to register /profile command");
+            Logger.info("&cFailed to register /vprofile command");
             ex.printStackTrace();
         }
     }
@@ -52,20 +59,20 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         // If the command sender is not player, return the code
         if(!(sender instanceof Player)){
-            Logger.info("&cOnly players can execute /profile command");
+            Logger.info("&cOnly players can execute /vprofile command");
             return true;
         }
         // Get the player object from the sender
         Player player = (Player) sender;
         // Get the InventoryManager
         InventoryManager inventoryManager = plugin.getInventoryManager();
-        // Check if args length is 0 (/profile)
+        // Check if args length is 0 (/vprofile)
         if (args.length == 0) {
-            // Permission: playerprofiles.profile
-            if(!(player.hasPermission("playerprofiles.profile"))){
-                player.sendMessage(Common.color(ConfigValue.NO_PERMISSION
+            // Permission: playerprofiles.vprofile (or legacy playerprofiles.profile)
+            if(!player.hasPermission("playerprofiles.vprofile") && !player.hasPermission("playerprofiles.profile")){
+                player.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
                         .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{permission}", "playerprofiles.profile")));
+                        .replace("{permission}", "playerprofiles.vprofile")));
                 return true;
             }
             // If the player has permission, open the profile
@@ -73,13 +80,13 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             // Stop the code here
             return true;
         }
-        // Check if args length is 1 (/profile (player))
+        // Check if args length is 1 (/vprofile (player))
         if (args.length == 1) {
-            // Permission: playerprofiles.profile.others
-            if(!(player.hasPermission("playerprofiles.profile.others"))){
-                player.sendMessage(Common.color(ConfigValue.NO_PERMISSION
+            // Permission: playerprofiles.vprofile.others (or legacy playerprofiles.profile.others)
+            if(!player.hasPermission("playerprofiles.vprofile.others") && !player.hasPermission("playerprofiles.profile.others")){
+                player.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
                         .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{permission}", "playerprofiles.profile.others")));
+                        .replace("{permission}", "playerprofiles.vprofile.others")));
                 return true;
             }
             // If the player has permission, open the profile of the target
@@ -87,7 +94,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             Player target = Bukkit.getPlayer(args[0]);
             // If the target is invalid, return the code
             if(target == null){
-                sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
+                sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                         .replace("{prefix}", ConfigValue.PREFIX)
                         .replace("{player}", args[0])));
                 return true;
@@ -101,7 +108,7 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if(args.length == 1 && sender.hasPermission("playerprofiles.profile.others")){
+        if(args.length == 1 && (sender.hasPermission("playerprofiles.vprofile.others") || sender.hasPermission("playerprofiles.profile.others"))){
             return null;
         }
         return new ArrayList<>();

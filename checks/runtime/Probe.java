@@ -63,11 +63,12 @@ public class Probe extends JavaPlugin {
     }
 
     private void runChecks() throws Exception {
-        PlayerProfiles plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("PlayerProfiles");
-        check(plugin != null && plugin.isEnabled(), "PlayerProfiles enables on Paper " + Bukkit.getBukkitVersion());
+        PlayerProfiles plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("BMCPlayerPoints");
+        if (plugin == null) plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("PlayerProfiles");
+        check(plugin != null && plugin.isEnabled(), "Plugin enables on Paper " + Bukkit.getBukkitVersion());
         check(plugin.getDescription().getVersion().equals("8.0.4"), "plugin descriptor matches Maven version");
-        for (String alias : List.of("playerprofiles", "profile", "lockprofile", "unlockprofile", "toggleprofile",
-                "playerprofile", "playerp", "pp", "viewprofile", "p", "profilelock", "lock", "profileunlock", "unlock")) {
+        for (String alias : List.of("playerprofiles", "vprofile", "lockprofile", "unlockprofile", "toggleprofile",
+                "playerprofile", "playerp", "pp", "viewprofile", "vp", "profilelock", "lock", "profileunlock", "unlock")) {
             check(Bukkit.getPluginCommand(alias) == plugin.getCommand(Bukkit.getPluginCommand(alias).getName()),
                     "registered command/alias " + alias);
         }

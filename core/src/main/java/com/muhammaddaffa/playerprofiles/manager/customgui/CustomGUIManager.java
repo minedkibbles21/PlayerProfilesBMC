@@ -1,14 +1,18 @@
 package com.muhammaddaffa.playerprofiles.manager.customgui;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
 import com.muhammaddaffa.playerprofiles.inventory.items.ItemsLoader;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class CustomGUIManager {
 
@@ -63,7 +67,7 @@ public class CustomGUIManager {
                 ItemsLoader.validateMenu(config);
                 List<GUIItem> items = ItemsLoader.readItems(config);
                 guiMap.put(file.getName(), new CustomGUI(file.getName(),
-                        Common.color(config.getString("title", "Inventory")), config.getInt("size"), config, items));
+                        Utils.color(config.getString("title", "Inventory")), config.getInt("size"), config, items));
             } catch (Exception ex) {
                 // YAML parser messages can include arbitrary configuration contents.
                 Logger.severe("Skipping an invalid or unreadable custom GUI (" + ex.getClass().getSimpleName() + ").");

@@ -4,7 +4,6 @@ import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.xseries.XSound;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.manager.profile.ProfileManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +16,23 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
+    private static final java.util.regex.Pattern BRACKET_HEX_PATTERN =
+            java.util.regex.Pattern.compile("\\{([#][0-9a-fA-F]{6})\\}");
+
+    public static String color(String message) {
+        if (message == null) return null;
+        if (message.isEmpty()) return "";
+        if (message.indexOf('{') != -1 && message.indexOf('#') != -1) {
+            message = BRACKET_HEX_PATTERN.matcher(message).replaceAll("<$1>");
+        }
+        return Common.color(message);
+    }
+
+    public static List<String> color(List<String> messages) {
+        if (messages == null) return null;
+        return messages.stream().map(Utils::color).collect(Collectors.toList());
+    }
+
     public static boolean hasCustomModelData(){
         return ItemManager.isVersionAtLeast(1, 14, 0);
     }
@@ -24,22 +40,36 @@ public class Utils {
     public static String tryParsePAPI(@NotNull String message, Player player, Player target){
         // Get the profile manager
         ProfileManager profileManager = PlayerProfiles.getInstance().getProfileManager();
-        // Player profile status
-        String playerStatus = profileManager.isProfileLocked(player) ? "&cLocked" : "&aUnlocked";
-        // Target profile status
-        String targetStatus = profileManager.isProfileLocked(target) ? "&cLocked" : "&aUnlocked";
-        // Finally, return the value with parsed player and target
+        boolean pLocked = profileManager.isProfileLocked(player);
+        boolean tLocked = profileManager.isProfileLocked(target);
+        String playerStatus = pLocked ? "&cLocked" : "&aUnlocked";
+        String targetStatus = tLocked ? "&cLocked" : "&aUnlocked";
+        String playerStatusPlain = pLocked ? "Locked" : "Unlocked";
+        String targetStatusPlain = tLocked ? "Locked" : "Unlocked";
+        String playerSymbol = pLocked ? "🔒" : "🔓";
+        String targetSymbol = tLocked ? "🔒" : "🔓";
+
         return Common.papi(target, message)
                 .replace("{player}", player.getName())
                 .replace("{target}", target.getName())
+                .replace("{player_displayname}", player.getDisplayName())
+                .replace("{target_displayname}", target.getDisplayName())
                 .replace("{player_status}", playerStatus)
                 .replace("{target_status}", targetStatus)
-                .replace("{player_health}", player.getHealth() + "")
-                .replace("{target_health}", target.getHealth() + "")
-                .replace("{player_exp}", player.getExp() + "")
-                .replace("{target_exp}", target.getExp() + "")
-                .replace("{player_level}", player.getLevel() + "")
-                .replace("{target_level}", target.getLevel() + "")
+                .replace("{player_status_plain}", playerStatusPlain)
+                .replace("{target_status_plain}", targetStatusPlain)
+                .replace("{player_status_symbol}", playerSymbol)
+                .replace("{target_status_symbol}", targetSymbol)
+                .replace("{player_health}", String.valueOf(player.getHealth()))
+                .replace("{target_health}", String.valueOf(target.getHealth()))
+                .replace("{player_exp}", String.valueOf(player.getExp()))
+                .replace("{target_exp}", String.valueOf(target.getExp()))
+                .replace("{player_level}", String.valueOf(player.getLevel()))
+                .replace("{target_level}", String.valueOf(target.getLevel()))
+                .replace("{player_ping}", String.valueOf(player.getPing()))
+                .replace("{target_ping}", String.valueOf(target.getPing()))
+                .replace("{player_gamemode}", player.getGameMode().name())
+                .replace("{target_gamemode}", target.getGameMode().name())
                 .replace("{player_uuid}", player.getUniqueId().toString())
                 .replace("{target_uuid}", target.getUniqueId().toString())
                 .replace("{player_world}", player.getWorld().getName())

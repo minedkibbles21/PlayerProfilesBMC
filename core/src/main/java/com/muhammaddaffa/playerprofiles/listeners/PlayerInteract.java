@@ -1,6 +1,5 @@
 package com.muhammaddaffa.playerprofiles.listeners;
 
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.utils.Utils;
@@ -42,7 +41,7 @@ public class PlayerInteract implements Listener {
             mapCooldown.values().removeIf(expiry -> expiry <= now);
             long remaining = mapCooldown.getOrDefault(player.getUniqueId(), 0L) - now;
             if (remaining > 0) {
-                player.sendMessage(Common.color(ConfigValue.COOLDOWN_MESSAGE
+                player.sendMessage(Utils.color(ConfigValue.COOLDOWN_MESSAGE
                         .replace("{prefix}", ConfigValue.PREFIX)
                         .replace("{time}", Long.toString((remaining + 999) / 1000))));
                 return;

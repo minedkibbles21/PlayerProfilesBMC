@@ -1,7 +1,6 @@
 package com.muhammaddaffa.playerprofiles.utils;
 
 import com.muhammaddaffa.mdlib.fastinv.FastInv;
-import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.utils.ItemBuilder;
 import com.muhammaddaffa.mdlib.xseries.XMaterial;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
@@ -126,8 +125,8 @@ public class ItemManager {
         if (stack == null || stack.getItemMeta() == null) return;
         // Item builder boiss.
         ItemBuilder builder = new ItemBuilder(stack)
-                .name(Common.color(config.getString("fillItems.name", "")))
-                .lore(Common.color(config.getStringList("fillItems.lore")))
+                .name(Utils.color(config.getString("fillItems.name", "")))
+                .lore(Utils.color(config.getStringList("fillItems.lore")))
                 .customModelData(config.getInt("fillItems.customModelData"));
         // Get the final item stack
         ItemStack finalStack = builder.build();

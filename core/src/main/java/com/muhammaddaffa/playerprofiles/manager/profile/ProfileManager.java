@@ -38,6 +38,10 @@ public class ProfileManager {
         return getOrCreate(player).isLocked();
     }
 
+    public boolean isProfileLocked(UUID uuid){
+        return getOrCreate(uuid).isLocked();
+    }
+
     public void lockProfile(Player player){
         getOrCreate(player).setLocked(true);
     }

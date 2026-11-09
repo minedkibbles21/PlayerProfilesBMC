@@ -23,6 +23,10 @@ public class ConfigValue {
     public static boolean DISABLE_IN_COMBAT_ENABLED;
     public static String DISABLE_IN_COMBAT_MESSAGE;
 
+    // zMenu
+    public static boolean ZMENU_ENABLED;
+    public static String ZMENU_PROFILE_MENU;
+
     // Disabled worlds
     public static List<String> DISABLED_WORLDS;
     public static String DISABLED_WORLD_MESSAGE;
@@ -68,6 +72,9 @@ public class ConfigValue {
         MUST_SHIFT_CLICK = config.getBoolean("options.shiftClick");
         DISABLE_IN_COMBAT_ENABLED = config.getBoolean("options.disableInCombat.enabled");
         DISABLE_IN_COMBAT_MESSAGE = config.getString("options.disableInCombat.message");
+
+        ZMENU_ENABLED = config.getBoolean("zmenu.enabled", false);
+        ZMENU_PROFILE_MENU = config.getString("zmenu.profileMenu", "profile");
 
         DISABLED_WORLDS = config.getStringList("disabledWorlds.worlds");
         DISABLED_WORLD_MESSAGE = config.getString("disabledWorlds.message");
@@ -185,6 +192,7 @@ public class ConfigValue {
                 # [MESSAGEPLAYER] &aMessage
                 # [MESSAGETARGET] &aMessage
                 # [OPENGUIMENU] gui-name.yml
+                # [ZMENU] inventory_name
                 # [CLOSE]
                 leftClickCommands: []
                 rightClickCommands: []

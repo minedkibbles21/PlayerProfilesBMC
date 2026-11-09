@@ -69,9 +69,10 @@ public class BehaviorChecks {
             assert !bundled.isEmpty() : resource;
             assert bundled.stream().allMatch(item -> !item.slots().isEmpty());
         }
-        for (String version : List.of("1.21.5-R0.1-SNAPSHOT", "26.3-R0.1-SNAPSHOT", "26.3.1-R0.1")) {
+        for (String version : List.of("1.21.5-R0.1-SNAPSHOT", "1.21.11-R0.1-SNAPSHOT", "26.0-R0.1-SNAPSHOT", "26.3-R0.1-SNAPSHOT", "26.3.1-R0.1")) {
             assert ItemManager.isVersionAtLeast(version, 1, 9, 0);
             assert ItemManager.isVersionAtLeast(version, 1, 14, 0);
+            assert ItemManager.isVersionAtLeast(version, 1, 21, 2);
         }
         assert !ItemManager.isVersionAtLeast("1.8.8-R0.1", 1, 9, 0);
         assert !ItemManager.isVersionAtLeast("1.7.10-R0.1", 1, 9, 0);

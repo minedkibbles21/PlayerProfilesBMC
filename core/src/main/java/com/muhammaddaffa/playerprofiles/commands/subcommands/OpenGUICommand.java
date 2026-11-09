@@ -6,7 +6,7 @@ import com.muhammaddaffa.playerprofiles.commands.abstraction.SubCommand;
 import com.muhammaddaffa.playerprofiles.inventory.InventoryManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUI;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUIManager;
-import com.muhammaddaffa.mdlib.utils.Common;
+import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class OpenGUICommand extends SubCommand {
         // The full command is /playerprofiles opengui (player) (target) (gui-name) - args length = 4
         // So we want to tell the command sender if the the args doesn't enough
         if(args.length < 4){
-            sender.sendMessage(Common.color("&cUsage: /playerprofiles opengui (player) (target) (gui-name)"));
+            sender.sendMessage(Utils.color("&cUsage: /playerprofiles opengui (player) (target) (gui-name)"));
             return;
         }
         // First get the player object from args[1]
@@ -49,7 +49,7 @@ public class OpenGUICommand extends SubCommand {
         // Check if the player is not valid
         if(player == null){
             // If the player isn't valid, we want to tell the command sender
-            sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{player}", args[1])));
             // Stop the code here
@@ -61,7 +61,7 @@ public class OpenGUICommand extends SubCommand {
         // Check if the target is not valid player
         if(target == null){
             // If the target is not valid player, we want to warn the command sender
-            sender.sendMessage(Common.color(ConfigValue.INVALID_PLAYER
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{player}", args[2])));
             return;
@@ -75,7 +75,7 @@ public class OpenGUICommand extends SubCommand {
         // And we check if the custom gui is null or doesn't exist
         if(customGUI == null){
             // We want to warn the sender if the custom gui isn't exist
-            sender.sendMessage(Common.color(ConfigValue.INVALID_GUI_NAME
+            sender.sendMessage(Utils.color(ConfigValue.INVALID_GUI_NAME
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{gui}", args[3])));
             // And stop the code here
