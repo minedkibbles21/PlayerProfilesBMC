@@ -3,8 +3,11 @@ package com.muhammaddaffa.playerprofiles.commands;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
+import com.muhammaddaffa.playerprofiles.manager.profile.Profile;
+import com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader;
 import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
@@ -22,29 +25,29 @@ import java.util.List;
 public class ToggleCommand implements CommandExecutor, TabCompleter {
 
     private static final String COMMAND_NAME = "toggleprofile";
-
     private final PlayerProfiles plugin;
-    public ToggleCommand(PlayerProfiles plugin){
+
+    public ToggleCommand(PlayerProfiles plugin) {
         this.plugin = plugin;
     }
 
-    public void registerThisCommand(){
+    public void registerThisCommand() {
         plugin.getCommand(COMMAND_NAME).setExecutor(this);
         plugin.getCommand(COMMAND_NAME).setTabCompleter(this);
+
         FileConfiguration config = PlayerProfiles.CONFIG_DEFAULT.getConfig();
         List<String> aliases = config.getStringList("commandAliases.toggleprofile");
         if (aliases.isEmpty()) {
             aliases = config.getStringList("commandAliases.toggleProfile");
         }
         plugin.getCommand(COMMAND_NAME).getAliases().addAll(aliases);
-        try{
-            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 
+        try {
+            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             bukkitCommandMap.setAccessible(true);
             ((CommandMap) bukkitCommandMap.get(Bukkit.getServer())).register(COMMAND_NAME, plugin.getCommand(COMMAND_NAME));
-
             bukkitCommandMap.setAccessible(false);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             Logger.info("&cFailed to register /toggleprofile command");
             ex.printStackTrace();
         }
@@ -58,39 +61,45 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
                     .replace("{permission}", "playerprofiles.admin")));
             return true;
         }
+
         if (args.length == 0) {
             sender.sendMessage(Utils.color("&cUsage: /toggleprofile <player>"));
             return true;
         }
-        Player target = Bukkit.getPlayer(args[0]);
-        if (target != null && target.isOnline()) {
-            if (plugin.getProfileManager().getOrCreate(target).isLocked()) {
-                plugin.getProfileManager().unlockProfile(target);
+
+        String targetName = args[0];
+        Player targetPlayer = Bukkit.getPlayer(targetName);
+        if (targetPlayer != null && targetPlayer.isOnline()) {
+            if (plugin.getProfileManager().getOrCreate(targetPlayer).isLocked()) {
+                plugin.getProfileManager().unlockProfile(targetPlayer);
                 sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
                         .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{player}", target.getName())));
+                        .replace("{player}", targetPlayer.getName())));
             } else {
-                plugin.getProfileManager().lockProfile(target);
+                plugin.getProfileManager().lockProfile(targetPlayer);
                 sender.sendMessage(Utils.color(ConfigValue.LOCK_PROFILE_OTHERS
                         .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{player}", target.getName())));
+                        .replace("{player}", targetPlayer.getName())));
             }
             return true;
         }
-        org.bukkit.OfflinePlayer offline = com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.resolveOfflinePlayer(args[0]);
-        if (offline != null) {
-            var profile = plugin.getProfileManager().getOrCreate(offline.getUniqueId());
+
+        OfflinePlayer offlineTarget = PlayerDataLoader.resolveOfflinePlayer(targetName);
+        if (offlineTarget != null) {
+            Profile profile = plugin.getProfileManager().getOrCreate(offlineTarget.getUniqueId());
             boolean wasLocked = profile.isLocked();
             profile.setLocked(!wasLocked);
-            String message = wasLocked ? ConfigValue.UNLOCK_PROFILE_OTHERS : ConfigValue.LOCK_PROFILE_OTHERS;
-            sender.sendMessage(Utils.color(message
+            String resolvedName = offlineTarget.getName() != null ? offlineTarget.getName() : targetName;
+            String statusNotice = wasLocked ? ConfigValue.UNLOCK_PROFILE_OTHERS : ConfigValue.LOCK_PROFILE_OTHERS;
+            sender.sendMessage(Utils.color(statusNotice
                     .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", offline.getName() != null ? offline.getName() : args[0])));
+                    .replace("{player}", resolvedName)));
             return true;
         }
+
         sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                 .replace("{prefix}", ConfigValue.PREFIX)
-                .replace("{player}", args[0])));
+                .replace("{player}", targetName)));
         return true;
     }
 
@@ -102,5 +111,4 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
         }
         return new ArrayList<>();
     }
-
 }
