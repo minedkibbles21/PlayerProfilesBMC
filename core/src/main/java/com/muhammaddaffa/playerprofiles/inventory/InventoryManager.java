@@ -37,14 +37,22 @@ public class InventoryManager {
     }
 
     public void openInventory(@Nullable CustomGUI customGUI, Player player, Player target) {
+        openInventory(customGUI, player, ProfileTarget.of(target), false);
+    }
+
+    public void openInventory(@Nullable CustomGUI customGUI, Player player, ProfileTarget target) {
         openInventory(customGUI, player, target, false);
     }
 
-    /** Admin forced-open commands can explicitly bypass the normal viewing policy. */
     public boolean openInventory(@Nullable CustomGUI customGUI, Player player, Player target, boolean forced) {
+        return openInventory(customGUI, player, ProfileTarget.of(target), forced);
+    }
+
+    /** Admin forced-open commands can explicitly bypass the normal viewing policy. */
+    public boolean openInventory(@Nullable CustomGUI customGUI, Player player, ProfileTarget target, boolean forced) {
         if (player == null || !player.isOnline()) return false;
-        if (target == null || !target.isOnline()) {
-            tell(player, ConfigValue.INVALID_PLAYER.replace("{player}", target == null ? "unknown" : target.getName()));
+        if (target == null) {
+            tell(player, ConfigValue.INVALID_PLAYER.replace("{player}", "unknown"));
             return false;
         }
         if (!forced && !canView(player, target)) return false;
@@ -70,15 +78,22 @@ public class InventoryManager {
     }
 
     public boolean canView(Player player, Player target) {
-        if (player == null || target == null || !player.isOnline() || !target.isOnline()) return false;
-        if (!player.canSee(target) || (ConfigValue.DISABLE_NPC_PROFILE && target.hasMetadata("NPC"))) return false;
-        String permission = player.equals(target) ? "playerprofiles.profile" : "playerprofiles.profile.others";
+        return canView(player, ProfileTarget.of(target));
+    }
+
+    public boolean canView(Player player, ProfileTarget target) {
+        if (player == null || target == null || !player.isOnline()) return false;
+        if (target.isOnline() && target.getPlayer() != null) {
+            if (!player.canSee(target.getPlayer()) || (ConfigValue.DISABLE_NPC_PROFILE && target.getPlayer().hasMetadata("NPC"))) return false;
+        }
+        boolean isOwner = player.getUniqueId().equals(target.getUniqueId());
+        String permission = isOwner ? "playerprofiles.profile" : "playerprofiles.profile.others";
         if (!player.hasPermission(permission)) {
             tell(player, ConfigValue.NO_PERMISSION.replace("{permission}", permission));
             return false;
         }
         // Owners must still be able to open their own menu to unlock their profile.
-        if (!player.equals(target) && plugin.getProfileManager().isProfileLocked(target)) {
+        if (!isOwner && target.isProfileLocked()) {
             tell(player, ConfigValue.LOCKED_PROFILE);
             return false;
         }
@@ -92,9 +107,11 @@ public class InventoryManager {
                 tell(player, ConfigValue.PLAYER_DISABLED_REGIONS);
                 return false;
             }
-            if (finder.getRegions(target.getLocation()).stream().anyMatch(ConfigValue.DISABLED_REGIONS::contains)) {
-                tell(player, ConfigValue.TARGET_DISABLED_REGIONS);
-                return false;
+            if (target.isOnline() && target.getPlayer() != null) {
+                if (finder.getRegions(target.getPlayer().getLocation()).stream().anyMatch(ConfigValue.DISABLED_REGIONS::contains)) {
+                    tell(player, ConfigValue.TARGET_DISABLED_REGIONS);
+                    return false;
+                }
             }
         }
         if (ConfigValue.DISABLE_IN_COMBAT_ENABLED &&

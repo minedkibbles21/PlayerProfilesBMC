@@ -3,6 +3,7 @@ package com.muhammaddaffa.playerprofiles.utils;
 import com.muhammaddaffa.mdlib.utils.Executor;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
+import com.muhammaddaffa.playerprofiles.inventory.ProfileTarget;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUI;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUIManager;
@@ -22,10 +23,14 @@ public class ClickManager {
     private static final Pattern pattern = Pattern.compile("(?<=\\[CONSOLE\\] |\\[PLAYER\\] |\\[SOUND\\] |\\[MESSAGE\\] |\\[MESSAGEPLAYER\\] |\\[MESSAGETARGET\\] |\\[OPENGUIMENU\\] |\\[ZMENU\\] |\\[ZM\\] |\\[CLOSE\\])");
 
     public static void handleInventoryClick(GUIItem item, Player player, Player target, InventoryClickEvent event){
-        handleInventoryClick(item, player, target, event, false);
+        handleInventoryClick(item, player, ProfileTarget.of(target), event, false);
     }
 
     public static void handleInventoryClick(GUIItem item, Player player, Player target, InventoryClickEvent event, boolean forced) {
+        handleInventoryClick(item, player, ProfileTarget.of(target), event, forced);
+    }
+
+    public static void handleInventoryClick(GUIItem item, Player player, ProfileTarget target, InventoryClickEvent event, boolean forced) {
         // Cancel the click to keep displayed items in the menu.
         event.setCancelled(true);
         // If the click type is LEFT, handle the left click
@@ -36,17 +41,17 @@ public class ClickManager {
             handleInventoryRightClick(item, player, target, forced);
     }
 
-    private static void handleInventoryLeftClick(GUIItem item, Player player, Player target, boolean forced){
+    private static void handleInventoryLeftClick(GUIItem item, Player player, ProfileTarget target, boolean forced){
         // Loop through all left click commands and handle the task
         item.leftCommands().forEach(command -> handleTask(command, player, target, forced));
     }
 
-    private static void handleInventoryRightClick(GUIItem item, Player player, Player target, boolean forced){
+    private static void handleInventoryRightClick(GUIItem item, Player player, ProfileTarget target, boolean forced){
         // Loop through all right click commands and handle the task
         item.rightCommands().forEach(command -> handleTask(command, player, target, forced));
     }
 
-    private static void handleTask(String command, Player player, Player target, boolean forced) {
+    private static void handleTask(String command, Player player, ProfileTarget target, boolean forced) {
         // Get the array from the splitted pattern
         String[] cmds = pattern.split(command);
         String tag = cmds[0];
@@ -76,8 +81,10 @@ public class ClickManager {
         if (tag.equalsIgnoreCase("[MESSAGE] ")) {
             // Send the player a message
             player.sendMessage(Utils.color(finalTask));
-            // Send the target a message
-            target.sendMessage(Utils.color(finalTask));
+            // Send the target a message if online
+            if (target.isOnline() && target.getPlayer() != null) {
+                target.getPlayer().sendMessage(Utils.color(finalTask));
+            }
             return;
         }
         // Check if the tag is MESSAGE
@@ -87,8 +94,10 @@ public class ClickManager {
             return;
         }
         if (tag.equalsIgnoreCase("[MESSAGETARGET] ")) {
-            // Send the target a message
-            target.sendMessage(Utils.color(finalTask));
+            // Send the target a message if online
+            if (target.isOnline() && target.getPlayer() != null) {
+                target.getPlayer().sendMessage(Utils.color(finalTask));
+            }
             return;
         }
         // Check if the tag is OPENGUIMENU

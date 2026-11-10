@@ -3,6 +3,8 @@ package com.muhammaddaffa.playerprofiles.utils;
 import com.muhammaddaffa.mdlib.utils.Common;
 import com.muhammaddaffa.mdlib.xseries.XSound;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
+import com.muhammaddaffa.playerprofiles.inventory.ProfileTarget;
+import com.muhammaddaffa.playerprofiles.manager.DependencyManager;
 import com.muhammaddaffa.playerprofiles.manager.profile.ProfileManager;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -38,18 +40,37 @@ public class Utils {
     }
 
     public static String tryParsePAPI(@NotNull String message, Player player, Player target){
+        return tryParsePAPI(message, player, ProfileTarget.of(target));
+    }
+
+    public static List<String> tryParsePAPI(@NotNull List<String> messages, Player player, Player target){
+        return tryParsePAPI(messages, player, ProfileTarget.of(target));
+    }
+
+    public static String tryParsePAPI(@NotNull String message, Player player, ProfileTarget target){
         // Get the profile manager
         ProfileManager profileManager = PlayerProfiles.getInstance().getProfileManager();
         boolean pLocked = profileManager.isProfileLocked(player);
-        boolean tLocked = profileManager.isProfileLocked(target);
+        boolean tLocked = target.isProfileLocked();
         String playerStatus = pLocked ? "&cLocked" : "&aUnlocked";
-        String targetStatus = tLocked ? "&cLocked" : "&aUnlocked";
+        String targetStatus = target.isOnline() ? (tLocked ? "&cLocked" : "&aUnlocked") : (tLocked ? "&cLocked" : "&7Offline");
         String playerStatusPlain = pLocked ? "Locked" : "Unlocked";
-        String targetStatusPlain = tLocked ? "Locked" : "Unlocked";
+        String targetStatusPlain = target.isOnline() ? (tLocked ? "Locked" : "Unlocked") : (tLocked ? "Locked" : "Offline");
         String playerSymbol = pLocked ? "🔒" : "🔓";
-        String targetSymbol = tLocked ? "🔒" : "🔓";
+        String targetSymbol = tLocked ? "🔒" : (target.isOnline() ? "🔓" : "⚪");
 
-        return Common.papi(target, message)
+        String papiApplied;
+        if (target.isOnline() && target.getPlayer() != null) {
+            papiApplied = Common.papi(target.getPlayer(), message);
+        } else if (DependencyManager.PLACEHOLDER_API) {
+            papiApplied = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(target.getOfflinePlayer(), message);
+        } else {
+            papiApplied = message;
+        }
+
+        Player onlineTarget = target.getPlayer();
+
+        return papiApplied
                 .replace("{player}", player.getName())
                 .replace("{target}", target.getName())
                 .replace("{player_displayname}", player.getDisplayName())
@@ -60,23 +81,24 @@ public class Utils {
                 .replace("{target_status_plain}", targetStatusPlain)
                 .replace("{player_status_symbol}", playerSymbol)
                 .replace("{target_status_symbol}", targetSymbol)
+                .replace("{target_is_bedrock}", String.valueOf(target.isBedrock()))
                 .replace("{player_health}", String.valueOf(player.getHealth()))
-                .replace("{target_health}", String.valueOf(target.getHealth()))
+                .replace("{target_health}", onlineTarget != null ? String.valueOf(onlineTarget.getHealth()) : "0")
                 .replace("{player_exp}", String.valueOf(player.getExp()))
-                .replace("{target_exp}", String.valueOf(target.getExp()))
+                .replace("{target_exp}", onlineTarget != null ? String.valueOf(onlineTarget.getExp()) : "0")
                 .replace("{player_level}", String.valueOf(player.getLevel()))
-                .replace("{target_level}", String.valueOf(target.getLevel()))
+                .replace("{target_level}", onlineTarget != null ? String.valueOf(onlineTarget.getLevel()) : "0")
                 .replace("{player_ping}", String.valueOf(player.getPing()))
-                .replace("{target_ping}", String.valueOf(target.getPing()))
+                .replace("{target_ping}", onlineTarget != null ? String.valueOf(onlineTarget.getPing()) : "0")
                 .replace("{player_gamemode}", player.getGameMode().name())
-                .replace("{target_gamemode}", target.getGameMode().name())
+                .replace("{target_gamemode}", onlineTarget != null ? onlineTarget.getGameMode().name() : "OFFLINE")
                 .replace("{player_uuid}", player.getUniqueId().toString())
                 .replace("{target_uuid}", target.getUniqueId().toString())
                 .replace("{player_world}", player.getWorld().getName())
-                .replace("{target_world}", target.getWorld().getName());
+                .replace("{target_world}", onlineTarget != null ? onlineTarget.getWorld().getName() : "None");
     }
 
-    public static List<String> tryParsePAPI(@NotNull List<String> messages, Player player, Player target){
+    public static List<String> tryParsePAPI(@NotNull List<String> messages, Player player, ProfileTarget target){
         return messages.stream().map(message -> tryParsePAPI(message, player, target)).collect(Collectors.toList());
     }
 

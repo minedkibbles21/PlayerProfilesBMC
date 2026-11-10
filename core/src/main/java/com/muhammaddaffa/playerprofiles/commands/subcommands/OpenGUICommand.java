@@ -56,37 +56,32 @@ public class OpenGUICommand extends SubCommand {
             return;
         }
         // After the check above, we already guaranteed the Player would not be null
-        // Now we want to get the Player object as target from args[2]
-        Player target = Bukkit.getPlayer(args[2]);
-        // Check if the target is not valid player
-        if(target == null){
-            // If the target is not valid player, we want to warn the command sender
-            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
-                    .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", args[2])));
-            return;
-        }
-        // After the check above, we already guaranteed the target would not be null
-        // then we want to get the Custom GUI from args[3]
-        // First, we get the CustomGUIManager
         CustomGUIManager customGUIManager = plugin.getCustomGUIManager();
-        // And get the CustomGUI object
         CustomGUI customGUI = customGUIManager.getByName(args[3]);
-        // And we check if the custom gui is null or doesn't exist
         if(customGUI == null){
-            // We want to warn the sender if the custom gui isn't exist
             sender.sendMessage(Utils.color(ConfigValue.INVALID_GUI_NAME
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{gui}", args[3])));
-            // And stop the code here
             return;
         }
-        // After the check above we guaranteed the custom gui is not null
-        // And now we're gonna try to open the custom gui
-        // But first, we need to get the inventory manager
-        InventoryManager inventoryManager = plugin.getInventoryManager();
-        // Finally, we open the inventory for the player
-        inventoryManager.openInventory(customGUI, player, target, true);
+
+        String targetQuery = args[2];
+        Player onlineTarget = Bukkit.getPlayer(targetQuery);
+        if (onlineTarget != null && onlineTarget.isOnline()) {
+            plugin.getInventoryManager().openInventory(customGUI, player, onlineTarget, true);
+            return;
+        }
+
+        com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.loadTargetAsync(targetQuery, target -> {
+            if (target == null) {
+                sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                        .replace("{prefix}", ConfigValue.PREFIX)
+                        .replace("{player}", targetQuery)));
+                return;
+            }
+            com.muhammaddaffa.mdlib.utils.Executor.entity(player, () ->
+                    plugin.getInventoryManager().openInventory(customGUI, player, target, true));
+        });
     }
 
 }

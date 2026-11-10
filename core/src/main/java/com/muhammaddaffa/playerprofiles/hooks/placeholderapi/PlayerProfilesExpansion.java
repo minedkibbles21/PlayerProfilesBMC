@@ -64,54 +64,60 @@ public class PlayerProfilesExpansion extends PlaceholderExpansion {
         }
         if (lower.startsWith("locked_")) {
             String targetName = params.substring("locked_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return String.valueOf(plugin.getProfileManager().isProfileLocked(target.getUniqueId()));
             }
         }
         if (lower.startsWith("is_locked_")) {
             String targetName = params.substring("is_locked_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return plugin.getProfileManager().isProfileLocked(target.getUniqueId()) ? "yes" : "no";
             }
         }
         if (lower.startsWith("status_plain_")) {
             String targetName = params.substring("status_plain_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return plugin.getProfileManager().isProfileLocked(target.getUniqueId()) ? "Locked" : "Unlocked";
             }
         }
         if (lower.startsWith("status_")) {
             String targetName = params.substring("status_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return plugin.getProfileManager().isProfileLocked(target.getUniqueId()) ? "&cLocked" : "&aUnlocked";
             }
         }
         if (lower.startsWith("lock_symbol_")) {
             String targetName = params.substring("lock_symbol_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return plugin.getProfileManager().isProfileLocked(target.getUniqueId()) ? "🔒" : "🔓";
             }
         }
         if (lower.startsWith("symbol_")) {
             String targetName = params.substring("symbol_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null) {
                 return plugin.getProfileManager().isProfileLocked(target.getUniqueId()) ? "🔒" : "🔓";
             }
         }
         if (lower.startsWith("can_view_")) {
             String targetName = params.substring("can_view_".length());
-            Player target = Bukkit.getPlayer(targetName);
+            OfflinePlayer target = resolveTarget(targetName);
             if (target != null && player instanceof Player onlineViewer) {
-                return String.valueOf(plugin.getInventoryManager().canView(onlineViewer, target));
+                return String.valueOf(plugin.getInventoryManager().canView(onlineViewer, target.getPlayer() != null ? target.getPlayer() : onlineViewer));
             }
             return "false";
         }
         return null;
+    }
+
+    private OfflinePlayer resolveTarget(String targetName) {
+        Player online = Bukkit.getPlayerExact(targetName);
+        if (online != null) return online;
+        return com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.resolveOfflinePlayer(targetName);
     }
 }

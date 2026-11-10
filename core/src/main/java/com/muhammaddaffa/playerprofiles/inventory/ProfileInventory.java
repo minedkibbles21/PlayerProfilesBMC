@@ -24,17 +24,26 @@ public class ProfileInventory extends FastInv {
     private final List<HandleTask> tasks = new ArrayList<>();
 
     public ProfileInventory(List<GUIItem> items, Player player, Player target, int size, String title) {
-        this(items, player, target, size, title, PlayerProfiles.GUI_DEFAULT.getConfig(), false);
+        this(items, player, ProfileTarget.of(target), size, title, PlayerProfiles.GUI_DEFAULT.getConfig(), false);
     }
 
     public ProfileInventory(List<GUIItem> items, Player player, Player target, int size, String title,
+                            FileConfiguration config, boolean forced) {
+        this(items, player, ProfileTarget.of(target), size, title, config, forced);
+    }
+
+    public ProfileInventory(List<GUIItem> items, Player player, ProfileTarget target, int size, String title) {
+        this(items, player, target, size, title, PlayerProfiles.GUI_DEFAULT.getConfig(), false);
+    }
+
+    public ProfileInventory(List<GUIItem> items, Player player, ProfileTarget target, int size, String title,
                             FileConfiguration config, boolean forced) {
         super(size, Utils.color(Utils.tryParsePAPI(title, player, target)));
         this.config = config;
         this.forced = forced;
         this.targetName = target.getName();
         setAllItems(items, player, target);
-        if (ConfigValue.AUTO_REFRESH_ENABLED) {
+        if (target.isOnline() && ConfigValue.AUTO_REFRESH_ENABLED) {
             tasks.add(Executor.syncTimer(0L, Math.max(1, ConfigValue.AUTO_REFRESH_TICK), () -> {
                 if (!player.isOnline() || !target.isOnline()) {
                     close(player);
@@ -43,7 +52,7 @@ public class ProfileInventory extends FastInv {
                 setAllItems(items, player, target);
             }));
         }
-        if (ConfigValue.DISTANCE_CHECK_ENABLED) {
+        if (target.isOnline() && ConfigValue.DISTANCE_CHECK_ENABLED) {
             tasks.add(Executor.syncTimer(0L, 20L, () -> checkDistance(player, target)));
         }
         addCloseHandler(event -> cancelTasks());
@@ -59,13 +68,14 @@ public class ProfileInventory extends FastInv {
         if (player != null && player.isOnline()) player.closeInventory();
     }
 
-    private boolean visible(GUIItem item, Player player, Player target) {
+    private boolean visible(GUIItem item, Player player, ProfileTarget target) {
+        boolean isOwner = player.getUniqueId().equals(target.getUniqueId());
         return (!item.usePermission() || player.hasPermission(item.permission())) &&
-                (!item.onlyVisitor() || !player.equals(target)) &&
-                (!item.onlyOwner() || player.equals(target));
+                (!item.onlyVisitor() || !isOwner) &&
+                (!item.onlyOwner() || isOwner);
     }
 
-    private void setAllItems(List<GUIItem> items, Player player, Player target) {
+    private void setAllItems(List<GUIItem> items, Player player, ProfileTarget target) {
         // Clear both contents and handlers so hidden items cannot keep old actions.
         clearItems();
         List<GUIItem> sorted = new ArrayList<>(items);
@@ -77,7 +87,7 @@ public class ProfileInventory extends FastInv {
                     .filter(slot -> slot != null && slot >= 0 && slot < getInventory().getSize()).toList();
             setItems(slots, stack, event -> {
                 event.setCancelled(true);
-                if (!player.isOnline() || !target.isOnline() ||
+                if (!player.isOnline() || (target.isOnline() && !target.getPlayer().isOnline()) ||
                         (!forced && !PlayerProfiles.getInstance().getInventoryManager().canView(player, target))) {
                     close(player);
                     return;
@@ -93,13 +103,14 @@ public class ProfileInventory extends FastInv {
         ItemManager.fillItem(this, config);
     }
 
-    private void checkDistance(Player player, Player target) {
+    private void checkDistance(Player player, ProfileTarget target) {
         if (player == null || !player.isOnline()) {
             cancelTasks();
             return;
         }
-        if (target == null || !target.isOnline() || !player.getWorld().equals(target.getWorld()) ||
-                player.getLocation().distance(target.getLocation()) > ConfigValue.MAXIMUM_DISTANCE) {
+        Player onlineTarget = target.getPlayer();
+        if (onlineTarget == null || !onlineTarget.isOnline() || !player.getWorld().equals(onlineTarget.getWorld()) ||
+                player.getLocation().distance(onlineTarget.getLocation()) > ConfigValue.MAXIMUM_DISTANCE) {
             close(player);
             player.sendMessage(Utils.color(ConfigValue.DISTANCE_TOO_FAR
                     .replace("{prefix}", ConfigValue.PREFIX).replace("{player}", targetName)));

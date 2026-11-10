@@ -58,23 +58,34 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         Player target = Bukkit.getPlayer(args[0]);
-        if (target == null) {
-            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
-                    .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", args[0])));
+        if (target != null && target.isOnline()) {
+            if (plugin.getProfileManager().getOrCreate(target).isLocked()) {
+                plugin.getProfileManager().unlockProfile(target);
+                sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+                        .replace("{prefix}", ConfigValue.PREFIX)
+                        .replace("{player}", target.getName())));
+            } else {
+                plugin.getProfileManager().lockProfile(target);
+                sender.sendMessage(Utils.color(ConfigValue.LOCK_PROFILE_OTHERS
+                        .replace("{prefix}", ConfigValue.PREFIX)
+                        .replace("{player}", target.getName())));
+            }
             return true;
         }
-        if (plugin.getProfileManager().getOrCreate(target).isLocked()) {
-            plugin.getProfileManager().unlockProfile(target);
-            sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+        org.bukkit.OfflinePlayer offline = com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.resolveOfflinePlayer(args[0]);
+        if (offline != null) {
+            var profile = plugin.getProfileManager().getOrCreate(offline.getUniqueId());
+            boolean wasLocked = profile.isLocked();
+            profile.setLocked(!wasLocked);
+            String message = wasLocked ? ConfigValue.UNLOCK_PROFILE_OTHERS : ConfigValue.LOCK_PROFILE_OTHERS;
+            sender.sendMessage(Utils.color(message
                     .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", target.getName())));
-        } else {
-            plugin.getProfileManager().lockProfile(target);
-            sender.sendMessage(Utils.color(ConfigValue.LOCK_PROFILE_OTHERS
-                    .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", target.getName())));
+                    .replace("{player}", offline.getName() != null ? offline.getName() : args[0])));
+            return true;
         }
+        sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                .replace("{prefix}", ConfigValue.PREFIX)
+                .replace("{player}", args[0])));
         return true;
     }
 

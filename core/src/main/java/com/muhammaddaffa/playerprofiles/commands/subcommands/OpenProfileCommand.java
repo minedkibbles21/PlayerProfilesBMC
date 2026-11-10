@@ -35,35 +35,36 @@ public class OpenProfileCommand extends SubCommand {
     @Override
     public void execute(PlayerProfiles plugin, CommandSender sender, String[] args) {
         // The full command is /playerprofiles openprofile (target) (for-player) - args length = 3
-        // So we want to tell the command sender if the the args doesn't enough
         if(args.length < 3){
             sender.sendMessage(Utils.color("&cUsage: /playerprofiles openprofile (target) (for-player)"));
             return;
         }
-        // Get the target as Player object
-        Player target = Bukkit.getPlayer(args[1]);
-        // Check if the target is not valid player
-        if(target == null){
-            // If the target is not valid player, we want to warn the command sender
-            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
-                    .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", args[1])));
-            return;
-        }
-        // After we check with the above method, we guaranteed the target isn't null
-        // And now we want to get the player object
+        // Get the viewer player object
         Player player = Bukkit.getPlayer(args[2]);
-        // Check if the player is not valid player
-        if(player == null){
-            // If the player is not valid player, we want to warn the command sender
+        if(player == null || !player.isOnline()){
             sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                     .replace("{prefix}", ConfigValue.PREFIX)
                     .replace("{player}", args[2])));
             return;
         }
-        // Now we are guaranteed both player and target will not be null
-        // Finally, we open the profile of target for player
-        plugin.getInventoryManager().openInventory(null, player, target, true);
+
+        String targetQuery = args[1];
+        Player onlineTarget = Bukkit.getPlayer(targetQuery);
+        if (onlineTarget != null && onlineTarget.isOnline()) {
+            plugin.getInventoryManager().openInventory(null, player, onlineTarget, true);
+            return;
+        }
+
+        com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.loadTargetAsync(targetQuery, target -> {
+            if (target == null) {
+                sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                        .replace("{prefix}", ConfigValue.PREFIX)
+                        .replace("{player}", targetQuery)));
+                return;
+            }
+            com.muhammaddaffa.mdlib.utils.Executor.entity(player, () ->
+                    plugin.getInventoryManager().openInventory(null, player, target, true));
+        });
     }
 
 }

@@ -64,16 +64,24 @@ public class UnlockCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) {
-            sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+        if (player != null && player.isOnline()) {
+            plugin.getProfileManager().unlockProfile(player);
+            sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
                     .replace("{prefix}", ConfigValue.PREFIX)
-                    .replace("{player}", args[0])));
+                    .replace("{player}", player.getName())));
             return true;
         }
-        plugin.getProfileManager().unlockProfile(player);
-        sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+        org.bukkit.OfflinePlayer offline = com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.resolveOfflinePlayer(args[0]);
+        if (offline != null) {
+            plugin.getProfileManager().getOrCreate(offline.getUniqueId()).setLocked(false);
+            sender.sendMessage(Utils.color(ConfigValue.UNLOCK_PROFILE_OTHERS
+                    .replace("{prefix}", ConfigValue.PREFIX)
+                    .replace("{player}", offline.getName() != null ? offline.getName() : args[0])));
+            return true;
+        }
+        sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                 .replace("{prefix}", ConfigValue.PREFIX)
-                .replace("{player}", player.getName())));
+                .replace("{player}", args[0])));
         return true;
     }
 

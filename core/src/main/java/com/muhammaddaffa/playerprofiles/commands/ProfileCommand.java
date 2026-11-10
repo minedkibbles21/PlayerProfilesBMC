@@ -1,5 +1,6 @@
 package com.muhammaddaffa.playerprofiles.commands;
 
+import com.muhammaddaffa.mdlib.utils.Executor;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
@@ -89,18 +90,22 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
                         .replace("{permission}", "playerprofiles.vprofile.others")));
                 return true;
             }
-            // If the player has permission, open the profile of the target
-            // First, get the target as Player object
-            Player target = Bukkit.getPlayer(args[0]);
-            // If the target is invalid, return the code
-            if(target == null){
-                sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
-                        .replace("{prefix}", ConfigValue.PREFIX)
-                        .replace("{player}", args[0])));
+            String targetQuery = args[0];
+            Player onlineTarget = Bukkit.getPlayer(targetQuery);
+            if (onlineTarget != null && onlineTarget.isOnline()) {
+                inventoryManager.openInventory(null, player, onlineTarget);
                 return true;
             }
-            // If the target is valid, we open the target's profile for player
-            inventoryManager.openInventory(null, player, target);
+            // If the target is offline or a Bedrock player via Floodgate, load asynchronously
+            com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.loadTargetAsync(targetQuery, target -> {
+                if (target == null) {
+                    sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
+                            .replace("{prefix}", ConfigValue.PREFIX)
+                            .replace("{player}", targetQuery)));
+                    return;
+                }
+                Executor.entity(player, () -> inventoryManager.openInventory(null, player, target));
+            });
         }
         return true;
     }

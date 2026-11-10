@@ -3,6 +3,7 @@ package com.muhammaddaffa.playerprofiles.utils;
 import com.muhammaddaffa.mdlib.fastinv.FastInv;
 import com.muhammaddaffa.mdlib.utils.ItemBuilder;
 import com.muhammaddaffa.mdlib.xseries.XMaterial;
+import com.muhammaddaffa.playerprofiles.inventory.ProfileTarget;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,6 +20,10 @@ import java.util.Optional;
 public class ItemManager {
 
     public static ItemStack createItem(GUIItem item, Player player, Player target) {
+        return createItem(item, player, ProfileTarget.of(target));
+    }
+
+    public static ItemStack createItem(GUIItem item, Player player, ProfileTarget target) {
         if (item.material().isBlank()) return errorItem(item);
         ItemBuilder builder;
         if (item.material().contains(";")) {
@@ -56,7 +61,7 @@ public class ItemManager {
         return stack;
     }
 
-    private static ItemBuilder configuredBuilder(GUIItem item, Player player, Player target, ItemStack stack) {
+    private static ItemBuilder configuredBuilder(GUIItem item, Player player, ProfileTarget target, ItemStack stack) {
         return new ItemBuilder(stack)
                 .name(Utils.tryParsePAPI(item.name(), player, target))
                 .lore(Utils.tryParsePAPI(item.lore(), player, target))
@@ -64,13 +69,21 @@ public class ItemManager {
                 .customModelData(item.customModelData());
     }
 
-    private static ItemBuilder headBuilder(GUIItem item, Player player, Player target, String value) {
+    private static ItemBuilder headBuilder(GUIItem item, Player player, ProfileTarget target, String value) {
         ItemBuilder builder = configuredBuilder(item, player, target, new ItemStack(Material.PLAYER_HEAD));
         String identifier = value.replace("{player}", player.getName()).replace("{target}", target.getName());
         try {
-            if (identifier.equals(player.getName())) builder.skull(player);
-            else if (identifier.equals(target.getName())) builder.skull(target);
-            else builder.skull(identifier);
+            if (identifier.equals(player.getName())) {
+                builder.skull(player);
+            } else if (identifier.equals(target.getName())) {
+                if (target.isOnline() && target.getPlayer() != null) {
+                    builder.skull(target.getPlayer());
+                } else {
+                    builder.skull(target.getOfflinePlayer());
+                }
+            } else {
+                builder.skull(identifier);
+            }
         } catch (RuntimeException ex) {
             // An untextured player head is a valid fallback for an invalid texture.
             builder = configuredBuilder(item, player, target, new ItemStack(Material.PLAYER_HEAD));
@@ -78,18 +91,20 @@ public class ItemManager {
         return builder;
     }
 
-    private static ItemStack slotItem(GUIItem item, Player target, String value) {
+    private static ItemStack slotItem(GUIItem item, ProfileTarget target, String value) {
         try {
             int slot = Integer.parseInt(value);
-            if (slot < 0 || slot >= target.getInventory().getSize()) return errorItem(item);
-            ItemStack stack = target.getInventory().getItem(slot);
-            return stack == null ? new ItemStack(Material.AIR) : stack.clone();
+            return target.getItem(slot);
         } catch (NumberFormatException ex) {
             return errorItem(item);
         }
     }
 
     public static ItemStack createGUIItem(GUIItem item, Player player, Player target) {
+        return createGUIItem(item, player, ProfileTarget.of(target));
+    }
+
+    public static ItemStack createGUIItem(GUIItem item, Player player, ProfileTarget target) {
         if (item.type().contains(";")) {
             String[] parts = item.type().split(";", 2);
             if (parts[1].isBlank()) return errorItem(item);
@@ -100,12 +115,12 @@ public class ItemManager {
             };
         }
         return switch (item.type()) {
-            case "HELMET" -> createArmorItem(item, player, target, target.getInventory().getHelmet());
-            case "CHESTPLATE" -> createArmorItem(item, player, target, target.getInventory().getChestplate());
-            case "LEGGINGS" -> createArmorItem(item, player, target, target.getInventory().getLeggings());
-            case "BOOTS" -> createArmorItem(item, player, target, target.getInventory().getBoots());
-            case "MAIN_HAND" -> createArmorItem(item, player, target, target.getInventory().getItemInMainHand());
-            case "OFF_HAND" -> createArmorItem(item, player, target, target.getInventory().getItemInOffHand());
+            case "HELMET" -> createArmorItem(item, player, target, target.getHelmet());
+            case "CHESTPLATE" -> createArmorItem(item, player, target, target.getChestplate());
+            case "LEGGINGS" -> createArmorItem(item, player, target, target.getLeggings());
+            case "BOOTS" -> createArmorItem(item, player, target, target.getBoots());
+            case "MAIN_HAND" -> createArmorItem(item, player, target, target.getMainHand());
+            case "OFF_HAND" -> createArmorItem(item, player, target, target.getOffHand());
             default -> createItem(item, player, target);
         };
     }
@@ -139,7 +154,7 @@ public class ItemManager {
         }
     }
 
-    private static ItemStack createArmorItem(GUIItem item, Player player, Player target, ItemStack stack){
+    private static ItemStack createArmorItem(GUIItem item, Player player, ProfileTarget target, ItemStack stack){
         if(stack == null || stack.getType() == Material.AIR) return createItem(item, player, target);
         return stack.clone();
     }

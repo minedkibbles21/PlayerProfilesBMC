@@ -93,6 +93,64 @@ public class BehaviorChecks {
         ItemsLoader.validateMenu(config);
         config.loadFromString("size: 9\nitems: {first: {slots: [0, 8]}}");
         ItemsLoader.validateMenu(config);
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries and menu validation.");
+
+        // Verify Floodgate Bedrock UUID detection
+        UUID bedrockUuid = new UUID(0L, 123456789L);
+        assert com.muhammaddaffa.playerprofiles.hooks.floodgate.FloodgateHook.isBedrockPlayer(bedrockUuid);
+        UUID javaUuid = UUID.randomUUID();
+        assert !com.muhammaddaffa.playerprofiles.hooks.floodgate.FloodgateHook.isBedrockPlayer(new UUID(1L, javaUuid.getLeastSignificantBits()));
+
+        // Verify NBT parsing with GZIP
+        java.io.ByteArrayOutputStream byteOut = new java.io.ByteArrayOutputStream();
+        try (java.io.DataOutputStream out = new java.io.DataOutputStream(new java.util.zip.GZIPOutputStream(byteOut))) {
+            out.writeByte(10); // TAG_Compound
+            out.writeUTF("");  // Root name
+            // SelectedItemSlot: 0
+            out.writeByte(3); // TAG_Int
+            out.writeUTF("SelectedItemSlot");
+            out.writeInt(0);
+            // Inventory: List of Compounds
+            out.writeByte(9); // TAG_List
+            out.writeUTF("Inventory");
+            out.writeByte(10); // elemType = TAG_Compound
+            out.writeInt(2);   // 2 items
+
+            // Item 1: Helmet in slot 103
+            out.writeByte(1); // TAG_Byte (Slot)
+            out.writeUTF("Slot");
+            out.writeByte(103);
+            out.writeByte(8); // TAG_String (id)
+            out.writeUTF("id");
+            out.writeUTF("minecraft:diamond_helmet");
+            out.writeByte(3); // TAG_Int (count)
+            out.writeUTF("count");
+            out.writeInt(1);
+            out.writeByte(0); // TAG_End
+
+            // Item 2: MainHand in slot 0
+            out.writeByte(1); // TAG_Byte (Slot)
+            out.writeUTF("Slot");
+            out.writeByte(0);
+            out.writeByte(8); // TAG_String (id)
+            out.writeUTF("id");
+            out.writeUTF("minecraft:netherite_sword");
+            out.writeByte(3); // TAG_Int (count)
+            out.writeUTF("count");
+            out.writeInt(1);
+            out.writeByte(0); // TAG_End
+
+            out.writeByte(0); // TAG_End root
+        }
+
+        com.muhammaddaffa.playerprofiles.utils.nbt.NBTCompound rootTag =
+                com.muhammaddaffa.playerprofiles.utils.nbt.NBTReader.readStream(new java.io.ByteArrayInputStream(byteOut.toByteArray()));
+        assert rootTag.getInt("SelectedItemSlot") == 0;
+        com.muhammaddaffa.playerprofiles.inventory.OfflineEquipment equipment =
+                com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.parseEquipment(rootTag);
+        assert "minecraft:diamond_helmet".equals(equipment.getRawItemId(103));
+        assert "minecraft:netherite_sword".equals(equipment.getRawItemId(0));
+        assert equipment.getRawItemId(102) == null;
+
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection and menu validation.");
     }
 }
