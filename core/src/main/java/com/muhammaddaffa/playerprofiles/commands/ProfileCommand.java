@@ -68,7 +68,8 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
         // Get the InventoryManager
         InventoryManager inventoryManager = plugin.getInventoryManager();
         // Check if args length is 0 (/vprofile)
-        if (args.length == 0) {
+  if(args.length == 0) {
+
             // Permission: playerprofiles.vprofile (or legacy playerprofiles.profile)
             if(!player.hasPermission("playerprofiles.vprofile") && !player.hasPermission("playerprofiles.profile")){
                 player.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
@@ -82,7 +83,8 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         // Check if args length is 1 (/vprofile (player))
-        if (args.length == 1) {
+  if(args.length == 1) {
+
             // Permission: playerprofiles.vprofile.others (or legacy playerprofiles.profile.others)
             if(!player.hasPermission("playerprofiles.vprofile.others") && !player.hasPermission("playerprofiles.profile.others")){
                 player.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
@@ -98,7 +100,8 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             }
             // If the target is offline or a Bedrock player via Floodgate, load asynchronously
             com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.loadTargetAsync(targetQuery, target -> {
-                if (target == null) {
+      if(target == null) {
+
                     sender.sendMessage(Utils.color(ConfigValue.INVALID_PLAYER
                             .replace("{prefix}", ConfigValue.PREFIX)
                             .replace("{player}", targetQuery)));
