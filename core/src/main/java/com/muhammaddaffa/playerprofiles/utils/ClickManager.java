@@ -108,8 +108,7 @@ public class ClickManager {
             // Get the custom gui from the task
             CustomGUI customGUI = customGUIManager.getByName(finalTask);
             // Return if the custom gui is invalid
-    if(customGUI == null) {
-
+            if (customGUI == null) {
                 Logger.info("&c" + player.getName() + " trying to open an invalid GUI! (" + finalTask + ")");
                 return;
             }

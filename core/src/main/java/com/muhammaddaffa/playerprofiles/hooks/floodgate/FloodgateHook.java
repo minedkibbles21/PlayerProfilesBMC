@@ -17,8 +17,7 @@ public class FloodgateHook {
     private static Method getUuidForMethod = null;
 
     public static boolean isEnabled() {
-      if(enabled == null) {
-
+        if (enabled == null) {
             init();
         }
         return enabled;
@@ -31,8 +30,7 @@ public class FloodgateHook {
                 Class<?> apiClass = Class.forName("org.geysermc.floodgate.api.FloodgateApi");
                 Method getInstance = apiClass.getMethod("getInstance");
                 floodgateApiInstance = getInstance.invoke(null);
-    if(floodgateApiInstance != null) {
-
+                if (floodgateApiInstance != null) {
                     try { isFloodgatePlayerMethod = apiClass.getMethod("isFloodgatePlayer", UUID.class); } catch (Exception ignored) {}
                     try { isFloodgateIdMethod = apiClass.getMethod("isFloodgateId", UUID.class); } catch (Exception ignored) {}
                     try { getPlayerPrefixMethod = apiClass.getMethod("getPlayerPrefix"); } catch (Exception ignored) {}
@@ -51,12 +49,10 @@ public class FloodgateHook {
         if (uuid.getMostSignificantBits() == 0L) return true;
         if (isEnabled() && floodgateApiInstance != null) {
             try {
-  if(isFloodgatePlayerMethod != null) {
-
+                if (isFloodgatePlayerMethod != null) {
                     return (boolean) isFloodgatePlayerMethod.invoke(floodgateApiInstance, uuid);
                 }
-    if(isFloodgateIdMethod != null) {
-
+                if (isFloodgateIdMethod != null) {
                     return (boolean) isFloodgateIdMethod.invoke(floodgateApiInstance, uuid);
                 }
             } catch (Exception ignored) {}
@@ -78,11 +74,10 @@ public class FloodgateHook {
         if (username == null || username.isBlank()) return null;
         if (isEnabled() && floodgateApiInstance != null && getUuidForMethod != null) {
             try {
-                Object result = getUuidForMethod.invoke(floodgateApiInstance, username);
-      if(result instanceof CompletableFuture<?> future) {
-
-                    Object uuid = future.get(500, TimeUnit.MILLISECONDS);
-                    if (uuid instanceof UUID u) return u;
+                Object queryResponse = getUuidForMethod.invoke(floodgateApiInstance, username);
+                if (queryResponse instanceof CompletableFuture<?> future) {
+                    Object resolvedUuid = future.get(500, TimeUnit.MILLISECONDS);
+                    if (resolvedUuid instanceof UUID bedrockId) return bedrockId;
                 }
             } catch (Exception ignored) {}
         }

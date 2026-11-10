@@ -180,8 +180,7 @@ public class ItemManager {
             int maj = Integer.parseInt(parts[0].replaceAll("[^0-9]", ""));
             int min = Integer.parseInt(parts[1].replaceAll("[^0-9]", ""));
             int pat = 0;
-      if(parts.length > 2) {
-
+            if (parts.length > 2) {
                 String clean = parts[2].replaceAll("[^0-9]", "");
                 if (!clean.isEmpty()) {
                     pat = Integer.parseInt(clean);

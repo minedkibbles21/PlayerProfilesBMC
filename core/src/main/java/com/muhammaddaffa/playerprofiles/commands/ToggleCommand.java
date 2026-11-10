@@ -10,6 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +31,12 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
     public void registerThisCommand(){
         plugin.getCommand(COMMAND_NAME).setExecutor(this);
         plugin.getCommand(COMMAND_NAME).setTabCompleter(this);
-        // Get the file configuration of config.yml
-        // Trying to register the aliases from the config
+        FileConfiguration config = PlayerProfiles.CONFIG_DEFAULT.getConfig();
+        List<String> aliases = config.getStringList("commandAliases.toggleprofile");
+        if (aliases.isEmpty()) {
+            aliases = config.getStringList("commandAliases.toggleProfile");
+        }
+        plugin.getCommand(COMMAND_NAME).getAliases().addAll(aliases);
         try{
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 

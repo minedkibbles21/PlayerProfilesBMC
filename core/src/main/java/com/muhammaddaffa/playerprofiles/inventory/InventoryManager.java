@@ -51,8 +51,7 @@ public class InventoryManager {
     /** Admin forced-open commands can explicitly bypass the normal viewing policy. */
     public boolean openInventory(@Nullable CustomGUI customGUI, Player player, ProfileTarget target, boolean forced) {
         if (player == null || !player.isOnline()) return false;
-  if(target == null) {
-
+        if (target == null) {
             tell(player, ConfigValue.INVALID_PLAYER.replace("{player}", "unknown"));
             return false;
         }

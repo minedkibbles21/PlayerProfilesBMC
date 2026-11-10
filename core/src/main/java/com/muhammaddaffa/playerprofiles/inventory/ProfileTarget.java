@@ -45,6 +45,17 @@ public interface ProfileTarget {
         return new OnlineProfileTarget(player);
     }
 
+    static ProfileTarget of(OfflinePlayer offlinePlayer) {
+        if (offlinePlayer instanceof Player onlinePlayer) {
+            return new OnlineProfileTarget(onlinePlayer);
+        }
+        if (offlinePlayer != null && offlinePlayer.isOnline() && offlinePlayer.getPlayer() != null) {
+            return new OnlineProfileTarget(offlinePlayer.getPlayer());
+        }
+        boolean isBedrock = offlinePlayer != null && com.muhammaddaffa.playerprofiles.hooks.floodgate.FloodgateHook.isBedrockPlayer(offlinePlayer.getUniqueId());
+        return new OfflineProfileTarget(offlinePlayer, null, isBedrock);
+    }
+
     static ProfileTarget of(OfflinePlayer offlinePlayer, OfflineEquipment equipment, boolean isBedrock) {
         return new OfflineProfileTarget(offlinePlayer, equipment, isBedrock);
     }

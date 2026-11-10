@@ -93,8 +93,7 @@ public class PlayerDataLoader {
 
             // Query Floodgate UUID resolver
             UUID floodgateUuid = FloodgateHook.getUuidFor(query);
-    if(floodgateUuid != null) {
-
+            if (floodgateUuid != null) {
                 OfflinePlayer floodgatePlayer = Bukkit.getOfflinePlayer(floodgateUuid);
                 if (floodgatePlayer != null) return floodgatePlayer;
             }
@@ -148,8 +147,7 @@ public class PlayerDataLoader {
 
         int selectedSlot = root.getInt("SelectedItemSlot", 0);
         List<Object> inventory = root.getList("Inventory");
-  for(Object elem : inventory) {
-
+        for (Object elem : inventory) {
             if (!(elem instanceof NBTCompound itemTag)) continue;
 
             int slot = itemTag.getInt("Slot");
@@ -159,8 +157,7 @@ public class PlayerDataLoader {
             equipment.setItem(slot, stack);
 
             // Standard Minecraft equipment slots
-    if(slot == 103) {
-
+            if (slot == 103) {
                 equipment.setHelmet(stack);
             } else if (slot == 102) {
                 equipment.setChestplate(stack);
@@ -198,16 +195,14 @@ public class PlayerDataLoader {
 
         // Modern 1.20.5+ / 26.3 components
         NBTCompound components = tag.getCompound("components");
-  if(components != null) {
-
+        if (components != null) {
             if (components.has("minecraft:custom_name")) {
                 meta.setDisplayName(Utils.color(cleanJsonText(components.getString("minecraft:custom_name"))));
             }
             if (components.has("minecraft:lore")) {
                 List<Object> loreList = components.getList("minecraft:lore");
                 List<String> lore = new ArrayList<>();
-    for(Object line : loreList) {
-
+                for (Object line : loreList) {
                     if (line instanceof String s) lore.add(Utils.color(cleanJsonText(s)));
                 }
                 meta.setLore(lore);
@@ -219,14 +214,12 @@ public class PlayerDataLoader {
                 meta.setCustomModelData(components.getInt("minecraft:custom_model_data"));
             }
             NBTCompound enchants = components.getCompound("minecraft:enchantments");
-    if(enchants != null) {
-
+            if (enchants != null) {
                 NBTCompound levels = enchants.getCompound("levels");
                 NBTCompound target = levels != null ? levels : enchants;
                 for (String enchKey : target.keySet()) {
                     Enchantment ench = parseEnchantment(enchKey);
-    if(ench != null) {
-
+                    if (ench != null) {
                         meta.addEnchant(ench, target.getInt(enchKey), true);
                     }
                 }
@@ -235,19 +228,16 @@ public class PlayerDataLoader {
 
         // Legacy 1.20.4 and older 'tag'
         NBTCompound legacyTag = tag.getCompound("tag");
-  if(legacyTag != null) {
-
+        if (legacyTag != null) {
             NBTCompound display = legacyTag.getCompound("display");
-    if(display != null) {
-
+            if (display != null) {
                 if (display.has("Name")) {
                     meta.setDisplayName(Utils.color(cleanJsonText(display.getString("Name"))));
                 }
                 if (display.has("Lore")) {
                     List<Object> loreList = display.getList("Lore");
                     List<String> lore = new ArrayList<>();
-  for(Object line : loreList) {
-
+                    for (Object line : loreList) {
                         if (line instanceof String s) lore.add(Utils.color(cleanJsonText(s)));
                     }
                     meta.setLore(lore);
@@ -261,14 +251,12 @@ public class PlayerDataLoader {
             }
             List<Object> enchants = legacyTag.getList("Enchantments");
             if (enchants.isEmpty()) enchants = legacyTag.getList("ench");
-      for(Object enchElem : enchants) {
-      if(enchElem instanceof NBTCompound enchTag) {
-
+            for (Object enchElem : enchants) {
+                if (enchElem instanceof NBTCompound enchTag) {
                     String enchId = enchTag.getString("id");
                     int lvl = enchTag.getInt("lvl");
                     Enchantment ench = parseEnchantment(enchId);
-  if(ench != null) {
-
+                    if (ench != null) {
                         meta.addEnchant(ench, lvl, true);
                     }
                 }
@@ -283,8 +271,7 @@ public class PlayerDataLoader {
         if (key == null || key.isBlank()) return null;
         try {
             NamespacedKey nsKey = NamespacedKey.fromString(key.toLowerCase(Locale.ROOT));
-      if(nsKey != null) {
-
+            if (nsKey != null) {
                 Enchantment ench = Enchantment.getByKey(nsKey);
                 if (ench != null) return ench;
             }
@@ -300,14 +287,16 @@ public class PlayerDataLoader {
             return trimmed.substring(1, trimmed.length() - 1);
         }
         if (trimmed.contains("\"text\":")) {
-            int idx = trimmed.indexOf("\"text\":\"");
-      if(idx != -1) {
-
-                int end = trimmed.indexOf("\"", idx + 8);
-    if(end != -1) {
-
-                    return trimmed.substring(idx + 8, end);
+            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\"text\"\\s*:\\s*\"([^\"]*)\"").matcher(trimmed);
+            StringBuilder combined = new StringBuilder();
+            while (matcher.find()) {
+                String token = matcher.group(1);
+                if (!token.isEmpty()) {
+                    combined.append(token);
                 }
+            }
+            if (combined.length() > 0) {
+                return combined.toString();
             }
         }
         return trimmed;

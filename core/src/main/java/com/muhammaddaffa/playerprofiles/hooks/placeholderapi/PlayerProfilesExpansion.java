@@ -108,7 +108,9 @@ public class PlayerProfilesExpansion extends PlaceholderExpansion {
             String targetName = params.substring("can_view_".length());
             OfflinePlayer target = resolveTarget(targetName);
             if (target != null && player instanceof Player onlineViewer) {
-                return String.valueOf(plugin.getInventoryManager().canView(onlineViewer, target.getPlayer() != null ? target.getPlayer() : onlineViewer));
+                com.muhammaddaffa.playerprofiles.inventory.ProfileTarget profileTarget =
+                        com.muhammaddaffa.playerprofiles.inventory.ProfileTarget.of(target);
+                return String.valueOf(plugin.getInventoryManager().canView(onlineViewer, profileTarget));
             }
             return "false";
         }

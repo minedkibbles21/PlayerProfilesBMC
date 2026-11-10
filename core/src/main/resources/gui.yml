@@ -134,23 +134,6 @@ items:
     permission: "custom.permission"
     lore:
       - "&cEmpty!"
-  unlockProfile:
-    material: head;eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA3ZmJjMzM5ZmYyNDFhYzNkNjYxOWJjYjY4MjUzZGZjM2M5ODc4MmJhZjNmMWY0ZWZkYjk1NGY5YzI2In19fQ==
-    name: "&aUnlock Profile"
-    slots: [ 53 ]
-    glowing: true
-    hideAttributes: false
-    customModelData: 0
-    onlyOwner: true
-    onlyVisitor: false
-    usePermission: false
-    permission: "custom.permission"
-    lore:
-      - "&7Click to unlock your profile"
-    leftClickCommands:
-      - "[CONSOLE] unlockprofile {target}"
-    rightClickCommands:
-      - "[CONSOLE] unlockprofile {target}"
   profileStatus:
     material: CHEST
     name: "&6Profile Status"
@@ -164,20 +147,3 @@ items:
     permission: "custom.permission"
     lore:
       - "{target_status}"
-  lockProfile:
-    material: head;eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE5ZjUwYjQzMmQ4NjhhZTM1OGUxNmY2MmVjMjZmMzU0MzdhZWI5NDkyYmNlMTM1NmM5YWE2YmIxOWEzODYifX19
-    name: "&cLock Profile"
-    slots: [ 51 ]
-    glowing: true
-    hideAttributes: false
-    customModelData: 0
-    onlyOwner: true
-    onlyVisitor: false
-    usePermission: false
-    permission: "custom.permission"
-    lore:
-      - "&7Click to lock your profile"
-    leftClickCommands:
-      - "[CONSOLE] lockprofile {target}"
-    rightClickCommands:
-      - "[CONSOLE] lockprofile {target}"

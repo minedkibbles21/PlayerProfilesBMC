@@ -46,6 +46,7 @@ cooldown:
 #   (vprofile) Aliases for /vprofile command
 #   (lockProfile) Aliases for /lockprofile command
 #   (unlockProfile) Aliases for /unlockprofile command
+#   (toggleprofile) Aliases for /toggleprofile command
 commandAliases:
   playerProfiles:
     - 'playerprofile'
@@ -60,6 +61,9 @@ commandAliases:
   unlockProfile:
     - 'profileunlock'
     - 'unlock'
+  toggleprofile:
+    - 'profiletoggle'
+    - 'togglep'
 
 # If the world name is in the list and players location is inside
 # the world that are on the list, player are unable to open any player profiles
