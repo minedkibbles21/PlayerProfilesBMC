@@ -4,6 +4,7 @@ main: com.muhammaddaffa.playerprofiles.PlayerProfiles
 author: aglerr, Starfruit2210, MinedKibbles21
 description: Proprietary player profiles plugin custom developed for BendersMC by MinedKibbles21 (fork of PlayerProfiles by aglerr and Starfruit2210).
 api-version: '26.2'
+folia-supported: true
 softdepend: [CombatLogX, DeluxeCombat, PlaceholderAPI, WorldGuard, WorldEdit, zMenu]
 
 commands:
