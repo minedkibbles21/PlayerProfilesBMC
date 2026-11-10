@@ -1,5 +1,6 @@
 package com.muhammaddaffa.playerprofiles.inventory;
 
+import com.muhammaddaffa.mdlib.utils.Executor;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.ConfigValue;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
@@ -49,11 +50,8 @@ public class InventoryManager {
         if (!forced && !canView(player, target)) return false;
         if (customGUI == null && ConfigValue.ZMENU_ENABLED && ConfigValue.ZMENU_PROFILE_MENU != null && !ConfigValue.ZMENU_PROFILE_MENU.isEmpty()) {
             String menu = Utils.tryParsePAPI(ConfigValue.ZMENU_PROFILE_MENU, player, target).trim();
-            if (menu.contains(" ")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + menu);
-            } else {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + menu + " " + player.getName());
-            }
+            String fullCommand = menu.contains(" ") ? "zmenu open " + menu : "zmenu open " + menu + " " + player.getName();
+            Executor.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), fullCommand));
             return true;
         }
         FileConfiguration config = customGUI == null ? PlayerProfiles.GUI_DEFAULT.getConfig() : customGUI.config();

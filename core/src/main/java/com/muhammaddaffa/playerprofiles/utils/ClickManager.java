@@ -1,5 +1,6 @@
 package com.muhammaddaffa.playerprofiles.utils;
 
+import com.muhammaddaffa.mdlib.utils.Executor;
 import com.muhammaddaffa.mdlib.utils.Logger;
 import com.muhammaddaffa.playerprofiles.PlayerProfiles;
 import com.muhammaddaffa.playerprofiles.inventory.items.GUIItem;
@@ -59,9 +60,9 @@ public class ClickManager {
         // Check if the tag is CONSOLE
         if(tag.equalsIgnoreCase("[CONSOLE] ")){
             // Remove the color so the command could work
-            finalTask = ChatColor.stripColor(finalTask);
-            // Execute a command in console
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalTask);
+            String cmd = ChatColor.stripColor(finalTask);
+            // Execute a command in console via Executor.sync for Folia global thread safety
+            Executor.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
             return;
         }
         // Check if the tag is PLAYER
@@ -107,12 +108,9 @@ public class ClickManager {
             return;
         }
         if (tag.equalsIgnoreCase("[ZMENU] ") || tag.equalsIgnoreCase("[ZM] ")) {
-            finalTask = ChatColor.stripColor(finalTask).trim();
-            if (finalTask.contains(" ")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + finalTask);
-            } else {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "zmenu open " + finalTask + " " + player.getName());
-            }
+            String cmd = ChatColor.stripColor(finalTask).trim();
+            String fullCommand = cmd.contains(" ") ? "zmenu open " + cmd : "zmenu open " + cmd + " " + player.getName();
+            Executor.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), fullCommand));
             return;
         }
         // Check if the tag is CLOSE
