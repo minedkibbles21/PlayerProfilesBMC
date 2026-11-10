@@ -113,7 +113,7 @@ messages:
   invalidGUIName: "{prefix} &cThere is no GUI with name '{gui}' &7(See /playerprofiles listgui)"
   listGUI: "{prefix} &7List GUI: &a{gui}"
   help:
-    - "&6&lBMCPlayerPoints &7- by MinedKibbles21"
+    - "&6&lBMCPlayerProfiles &7- by MinedKibbles21"
     - "&6- /playerprofiles help &7- shows the help messages"
     - "&6- /playerprofiles reload &7- reload the configuration"
     - "&6- /playerprofiles opengui (player) (target) (gui-name) &7- open custom gui"

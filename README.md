@@ -1,9 +1,9 @@
-# BMCPlayerPoints
+# BMCPlayerProfiles
 
 A high-performance, lightweight player profile menu plugin custom-built for Minecraft **26.3** (with backward compatibility for all **26.x** versions and **1.21.11**). Features custom GUI creation, full color customization (Adventure MiniMessage, Hex, and legacy colors), PlaceholderAPI expansion for seamless **zMenu** and **DeluxeMenus** integration, profile locking, and optional combat/region checks.
 
 - **Author**: `aglerr, Starfruit2210, MinedKibbles21`
-- **Data Folder**: `plugins/BMCPlayerPoints/`
+- **Data Folder**: `plugins/BMCPlayerProfiles/`
 - **Java Runtime**: **Java 25 LTS**
 
 ---
@@ -56,23 +56,23 @@ These placeholders can be used in `gui.yml`, custom menu configs, item names, lo
 ---
 
 ### 2. PlaceholderAPI Expansion
-BMCPlayerPoints automatically registers placeholders under both `%bmcplayerpoints_*%` and legacy `%playerprofiles_*%`. Use these in **zMenu**, **DeluxeMenus**, scoreboards, chat formatters, or tab lists:
+BMCPlayerProfiles automatically registers placeholders under both `%bmcplayerprofiles_*%` and legacy `%playerprofiles_*%` (with `%bmcplayerpoints_*%` supported for backward compatibility). Use these in **zMenu**, **DeluxeMenus**, scoreboards, chat formatters, or tab lists:
 
 | Placeholder | Description | Output |
 |---|---|---|
-| `%bmcplayerpoints_locked%` | Check if player's profile is locked (boolean string) | `true` / `false` |
-| `%bmcplayerpoints_is_locked%` | Check if player's profile is locked (yes/no) | `yes` / `no` |
-| `%bmcplayerpoints_status%` | Formatted lock status with color codes | `&aUnlocked` / `&cLocked` |
-| `%bmcplayerpoints_status_plain%` | Plain text lock status without colors | `Unlocked` / `Locked` |
-| `%bmcplayerpoints_symbol%` | Visual lock icon of the player | `🔓` / `🔒` |
-| `%bmcplayerpoints_lock_symbol%` | Alias for lock icon | `🔓` / `🔒` |
-| `%bmcplayerpoints_locked_<player>%` | Check if a specific player's profile is locked | `true` / `false` |
-| `%bmcplayerpoints_is_locked_<player>%` | Check if a specific player's profile is locked (yes/no) | `yes` / `no` |
-| `%bmcplayerpoints_status_<player>%` | Formatted lock status for a specific player | `&aUnlocked` / `&cLocked` |
-| `%bmcplayerpoints_status_plain_<player>%` | Plain lock status for a specific player | `Unlocked` / `Locked` |
-| `%bmcplayerpoints_symbol_<player>%` | Visual lock icon for a specific player | `🔓` / `🔒` |
-| `%bmcplayerpoints_lock_symbol_<player>%` | Alias for target lock icon | `🔓` / `🔒` |
-| `%bmcplayerpoints_can_view_<player>%` | Check if viewer can view target (permissions, world, combat) | `true` / `false` |
+| `%bmcplayerprofiles_locked%` | Check if player's profile is locked (boolean string) | `true` / `false` |
+| `%bmcplayerprofiles_is_locked%` | Check if player's profile is locked (yes/no) | `yes` / `no` |
+| `%bmcplayerprofiles_status%` | Formatted lock status with color codes | `&aUnlocked` / `&cLocked` |
+| `%bmcplayerprofiles_status_plain%` | Plain text lock status without colors | `Unlocked` / `Locked` |
+| `%bmcplayerprofiles_symbol%` | Visual lock icon of the player | `🔓` / `🔒` |
+| `%bmcplayerprofiles_lock_symbol%` | Alias for lock icon | `🔓` / `🔒` |
+| `%bmcplayerprofiles_locked_<player>%` | Check if a specific player's profile is locked | `true` / `false` |
+| `%bmcplayerprofiles_is_locked_<player>%` | Check if a specific player's profile is locked (yes/no) | `yes` / `no` |
+| `%bmcplayerprofiles_status_<player>%` | Formatted lock status for a specific player | `&aUnlocked` / `&cLocked` |
+| `%bmcplayerprofiles_status_plain_<player>%` | Plain lock status for a specific player | `Unlocked` / `Locked` |
+| `%bmcplayerprofiles_symbol_<player>%` | Visual lock icon for a specific player | `🔓` / `🔒` |
+| `%bmcplayerprofiles_lock_symbol_<player>%` | Alias for target lock icon | `🔓` / `🔒` |
+| `%bmcplayerprofiles_can_view_<player>%` | Check if viewer can view target (permissions, world, combat) | `true` / `false` |
 
 *(All above placeholders can also be referenced using `%playerprofiles_<placeholder>%`)*
 
@@ -128,7 +128,7 @@ zmenu:
   enabled: true
   profileMenu: "profile" # Name of your zMenu inventory (profile.yml -> "profile")
 ```
-When a player executes `/vprofile` or shift-right-clicks a player, BMCPlayerPoints validates all checks and immediately opens that zMenu inventory without intermediate menus.
+When a player executes `/vprofile` or shift-right-clicks a player, BMCPlayerProfiles validates all checks and immediately opens that zMenu inventory without intermediate menus.
 
 ### 2. Dedicated Action Tag (Option 1)
 Any item inside `gui.yml` or custom menus can open a zMenu inventory directly using `[ZMENU] <inventory>` or `[ZM] <inventory>`:
@@ -151,7 +151,7 @@ open_requirement:
   requirements:
     profile_unlocked:
       type: "!string equals"
-      input: "%bmcplayerpoints_locked%"
+      input: "%bmcplayerprofiles_locked%"
       output: "true"
       deny_commands:
         - "[message] &cThis profile is currently locked!"
@@ -164,8 +164,8 @@ items:
       material: PAPER
       name: "<gold>Profile Status"
       lore:
-        - "<gray>State: %bmcplayerpoints_status%"
-        - "<gray>Icon: %bmcplayerpoints_symbol%"
+        - "<gray>State: %bmcplayerprofiles_status%"
+        - "<gray>Icon: %bmcplayerprofiles_symbol%"
 ```
 
 ---

@@ -63,7 +63,7 @@ public class Probe extends JavaPlugin {
     }
 
     private void runChecks() throws Exception {
-        PlayerProfiles plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("BMCPlayerPoints");
+        PlayerProfiles plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("BMCPlayerProfiles");
         if (plugin == null) plugin = (PlayerProfiles) Bukkit.getPluginManager().getPlugin("PlayerProfiles");
         check(plugin != null && plugin.isEnabled(), "Plugin enables on Paper " + Bukkit.getBukkitVersion());
         check(plugin.getDescription().getVersion().equals("8.0.4"), "plugin descriptor matches Maven version");

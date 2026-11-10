@@ -1,4 +1,4 @@
-name: BMCPlayerPoints
+name: BMCPlayerProfiles
 version: ${project.version}
 main: com.muhammaddaffa.playerprofiles.PlayerProfiles
 author: aglerr, Starfruit2210, MinedKibbles21

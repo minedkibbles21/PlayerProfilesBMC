@@ -45,6 +45,7 @@ public class PlayerProfiles extends JavaPlugin {
         DependencyManager.checkDependency();
         // Register PlaceholderAPI expansion if present
         if (DependencyManager.PLACEHOLDER_API) {
+            new PlayerProfilesExpansion(this, "bmcplayerprofiles").register();
             new PlayerProfilesExpansion(this, "bmcplayerpoints").register();
             new PlayerProfilesExpansion(this, "playerprofiles").register();
         }
@@ -64,7 +65,7 @@ public class PlayerProfiles extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(playerInteract, this);
         // Register all commands
         registerCommands();
-        com.muhammaddaffa.mdlib.utils.Logger.info("&6[BMCPlayerPoints] &eBendersMC Private Build - Authorized for BMC Devs only.");
+        com.muhammaddaffa.mdlib.utils.Logger.info("&6[BMCPlayerProfiles] &eBendersMC Private Build - Authorized for BMC Devs only.");
     }
 
     @Override
