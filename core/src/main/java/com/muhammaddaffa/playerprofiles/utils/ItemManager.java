@@ -105,9 +105,7 @@ public class ItemManager {
             case "LEGGINGS" -> createArmorItem(item, player, target, target.getInventory().getLeggings());
             case "BOOTS" -> createArmorItem(item, player, target, target.getInventory().getBoots());
             case "MAIN_HAND" -> createArmorItem(item, player, target, target.getInventory().getItemInMainHand());
-            case "OFF_HAND" -> Utils.hasOffHand()
-                    ? createArmorItem(item, player, target, target.getInventory().getItemInOffHand())
-                    : new ItemStack(Material.AIR);
+            case "OFF_HAND" -> createArmorItem(item, player, target, target.getInventory().getItemInOffHand());
             default -> createItem(item, player, target);
         };
     }
@@ -164,9 +162,15 @@ public class ItemManager {
 
         if (parts.length < 2) return false;
         try {
-            int maj = Integer.parseInt(parts[0]);
-            int min = Integer.parseInt(parts[1]);
-            int pat = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+            int maj = Integer.parseInt(parts[0].replaceAll("[^0-9]", ""));
+            int min = Integer.parseInt(parts[1].replaceAll("[^0-9]", ""));
+            int pat = 0;
+            if (parts.length > 2) {
+                String clean = parts[2].replaceAll("[^0-9]", "");
+                if (!clean.isEmpty()) {
+                    pat = Integer.parseInt(clean);
+                }
+            }
 
             if (maj != major) return maj > major;
             if (min != minor) return min > minor;
