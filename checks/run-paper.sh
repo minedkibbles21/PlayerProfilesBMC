@@ -2,14 +2,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 : "${PAPER_JAR:?Set PAPER_JAR to a trusted Paper 26.3 server JAR}"
-test -f target/PlayerProfiles-8.0.4.jar
+test -f target/BMCPlayerProfiles.jar
 test -f core/target/check-classpath.txt
 mkdir -p .verification
 paper_test_dir=$(mktemp -d "$PWD/.verification/paper-regression.XXXXXX")
 mkdir -p "$paper_test_dir/classes" "$paper_test_dir/plugins"
-javac -cp "target/PlayerProfiles-8.0.4.jar:$(cat core/target/check-classpath.txt)" -d "$paper_test_dir/classes" checks/runtime/Probe.java
+javac -cp "target/BMCPlayerProfiles.jar:$(cat core/target/check-classpath.txt)" -d "$paper_test_dir/classes" checks/runtime/Probe.java
 jar cf "$paper_test_dir/plugins/PlayerProfilesProbe.jar" -C "$paper_test_dir/classes" . -C checks/runtime plugin.yml
-cp target/PlayerProfiles-8.0.4.jar "$paper_test_dir/plugins/PlayerProfiles.jar"
+cp target/BMCPlayerProfiles.jar "$paper_test_dir/plugins/PlayerProfiles.jar"
 cp "$PAPER_JAR" "$paper_test_dir/paper.jar"
 cat > "$paper_test_dir/server.properties" <<'PROPERTIES'
 server-ip=127.0.0.1

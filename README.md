@@ -180,7 +180,7 @@ mvn clean package
 
 The compiled plugin JAR will be located at:
 ```
-target/PlayerProfiles-8.0.4.jar
+target/BMCPlayerProfiles.jar
 ```
 
 To compile explicitly with the Paper 26.3 profile:

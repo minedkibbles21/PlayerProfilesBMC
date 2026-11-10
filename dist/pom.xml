@@ -18,7 +18,7 @@
 
     <build>
         <directory>../target</directory>
-        <finalName>PlayerProfiles-${project.version}</finalName>
+        <finalName>BMCPlayerProfiles</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
