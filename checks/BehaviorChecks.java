@@ -151,6 +151,99 @@ public class BehaviorChecks {
         assert "minecraft:netherite_sword".equals(equipment.getRawItemId(0));
         assert equipment.getRawItemId(102) == null;
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection and menu validation.");
+        // Verify modern 26.x "equipment" compound parsing
+        java.io.ByteArrayOutputStream modernOut = new java.io.ByteArrayOutputStream();
+        try (java.io.DataOutputStream out = new java.io.DataOutputStream(new java.util.zip.GZIPOutputStream(modernOut))) {
+            out.writeByte(10); // TAG_Compound (root)
+            out.writeUTF("");
+
+            out.writeByte(3); // TAG_Int (SelectedItemSlot)
+            out.writeUTF("SelectedItemSlot");
+            out.writeInt(0);
+
+            // equipment: TAG_Compound
+            out.writeByte(10);
+            out.writeUTF("equipment");
+
+            // head: netherite_helmet
+            out.writeByte(10);
+            out.writeUTF("head");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:netherite_helmet");
+            out.writeByte(0); // TAG_End head
+
+            // chest: netherite_chestplate
+            out.writeByte(10);
+            out.writeUTF("chest");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:netherite_chestplate");
+            out.writeByte(0); // TAG_End chest
+
+            // legs: netherite_leggings
+            out.writeByte(10);
+            out.writeUTF("legs");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:netherite_leggings");
+            out.writeByte(0); // TAG_End legs
+
+            // feet: netherite_boots
+            out.writeByte(10);
+            out.writeUTF("feet");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:netherite_boots");
+            out.writeByte(0); // TAG_End feet
+
+            // offhand: totem_of_undying
+            out.writeByte(10);
+            out.writeUTF("offhand");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:totem_of_undying");
+            out.writeByte(0); // TAG_End offhand
+
+            // mainhand: mace
+            out.writeByte(10);
+            out.writeUTF("mainhand");
+            out.writeByte(8);
+            out.writeUTF("id");
+            out.writeUTF("minecraft:mace");
+            out.writeByte(0); // TAG_End mainhand
+
+            out.writeByte(0); // TAG_End equipment
+            out.writeByte(0); // TAG_End root
+        }
+
+        com.muhammaddaffa.playerprofiles.utils.nbt.NBTCompound modernRoot =
+                com.muhammaddaffa.playerprofiles.utils.nbt.NBTReader.readStream(new java.io.ByteArrayInputStream(modernOut.toByteArray()));
+        com.muhammaddaffa.playerprofiles.inventory.OfflineEquipment modernEquip =
+                com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.parseEquipment(modernRoot);
+        assert "minecraft:netherite_helmet".equals(modernEquip.getRawItemId(103));
+        assert "minecraft:netherite_chestplate".equals(modernEquip.getRawItemId(102));
+        assert "minecraft:netherite_leggings".equals(modernEquip.getRawItemId(101));
+        assert "minecraft:netherite_boots".equals(modernEquip.getRawItemId(100));
+        assert "minecraft:totem_of_undying".equals(modernEquip.getRawItemId(-106));
+        assert "minecraft:mace".equals(modernEquip.getRawItemId(0));
+
+        // Verify 26.x directory lookup path: world/players/data/<uuid>.dat
+        UUID testUuid = UUID.randomUUID();
+        File testDir = new File("world/players/data");
+        testDir.mkdirs();
+        File testDat = new File(testDir, testUuid + ".dat");
+        try {
+            testDat.createNewFile();
+            File found = com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.getPlayerDataFile(testUuid);
+            assert found != null && found.exists() : "Failed to find 26.x playerdata file in world/players/data/";
+        } finally {
+            testDat.delete();
+            testDir.delete();
+            new File("world/players").delete();
+            new File("world").delete();
+        }
+
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment and directory paths.");
     }
 }

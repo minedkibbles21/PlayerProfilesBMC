@@ -14,6 +14,14 @@ public class NBTCompound {
         return values.containsKey(key);
     }
 
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
+
+    public int size() {
+        return values.size();
+    }
+
     public Set<String> keySet() {
         return values.keySet();
     }
