@@ -32,7 +32,7 @@ public class SetCombatTimerCommand extends SubCommand {
         if (args.length < 2) {
             int currentDuration = ConfigValue.DISABLE_IN_COMBAT_DURATION;
             sender.sendMessage(Utils.color("&6[BMCPlayerProfiles] &eCurrent combat timer: &6" + currentDuration + " &eseconds."));
-            sender.sendMessage(Utils.color("&7Usage: /playerprofiles setcombattimer <seconds>"));
+            sender.sendMessage(Utils.color("&7Usage: /bmcplayerprofile setcombattimer <seconds>"));
             return;
         }
 

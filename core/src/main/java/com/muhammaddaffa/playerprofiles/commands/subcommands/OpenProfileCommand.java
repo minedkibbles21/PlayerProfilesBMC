@@ -34,9 +34,9 @@ public class OpenProfileCommand extends SubCommand {
 
     @Override
     public void execute(PlayerProfiles plugin, CommandSender sender, String[] args) {
-        // The full command is /playerprofiles openprofile (target) (for-player) - args length = 3
+        // The full command is /bmcplayerprofile openprofile (target) (for-player) - args length = 3
         if(args.length < 3){
-            sender.sendMessage(Utils.color("&cUsage: /playerprofiles openprofile (target) (for-player)"));
+            sender.sendMessage(Utils.color("&cUsage: /bmcplayerprofile openprofile (target) (for-player)"));
             return;
         }
         // Get the viewer player object

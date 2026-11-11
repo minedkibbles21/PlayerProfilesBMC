@@ -100,20 +100,24 @@ All messages, GUI titles, item names, and lore entries support multiple color me
 | Command | Usage | Description | Permission |
 |---|---|---|---|
 | `/vprofile` | `/vprofile [player]` | Open your own or another player's profile | `playerprofiles.vprofile` (own)<br>`playerprofiles.vprofile.others` (others) |
+| `/bmcplayerprofilereload` | `/bmcplayerprofilereload` | Dedicated reload for all configuration files and custom menus | `playerprofiles.admin` |
+| `/bmcplayerprofile help` | `/bmcplayerprofile help` | Show administrative help menu | `playerprofiles.admin` |
+| `/bmcplayerprofile opengui` | `/bmcplayerprofile opengui <player> <target> <gui>` | Open a custom menu for a player | `playerprofiles.admin` |
+| `/bmcplayerprofile openprofile` | `/bmcplayerprofile openprofile <target> <player>` | Force open a target's profile for a player | `playerprofiles.admin` |
+| `/bmcplayerprofile listgui` | `/bmcplayerprofile listgui` | List all loaded custom GUIs | `playerprofiles.admin` |
+| `/bmcplayerprofile setcombattimer` | `/bmcplayerprofile setcombattimer <seconds>` | View or update combat timer duration | `playerprofiles.admin` |
 | `/lockprofile` | `/lockprofile <player>` | (Admin) Lock a player's profile | `playerprofiles.admin` or `playerprofiles.lockprofile.others` |
 | `/unlockprofile` | `/unlockprofile <player>` | (Admin) Unlock a player's profile | `playerprofiles.admin` or `playerprofiles.unlockprofile.others` |
 | `/toggleprofile` | `/toggleprofile <player>` | (Admin) Toggle a player's profile lock state | `playerprofiles.admin` or `playerprofiles.toggleprofile.others` |
-| `/playerprofiles reload` | `/playerprofiles reload` | Reload configuration files and custom menus | `playerprofiles.admin` |
-| `/playerprofiles opengui` | `/playerprofiles opengui <player> <target> <gui>` | Open a custom menu for a player | `playerprofiles.admin` |
-| `/playerprofiles openprofile` | `/playerprofiles openprofile <target> <player>` | Force open a target's profile for a player | `playerprofiles.admin` |
-| `/playerprofiles listgui` | `/playerprofiles listgui` | List all loaded custom GUIs | `playerprofiles.admin` |
 
 ### Command Aliases
 Configured in `config.yml`:
 - `/vprofile`: `/viewprofile`, `/vp`
-- `/playerprofiles`: `/playerprofile`, `/playerp`, `/pp`
+- `/bmcplayerprofile`: `/bmcplayerprofiles`, `/playerprofiles`, `/playerprofile`, `/playerp`, `/pp`
+- `/bmcplayerprofilereload`: `/bmcprofilereload`, `/playerprofilesreload`
 - `/lockprofile`: `/profilelock`, `/lock`
 - `/unlockprofile`: `/profileunlock`, `/unlock`
+- `/toggleprofile`: `/profiletoggle`, `/togglep`
 
 ---
 

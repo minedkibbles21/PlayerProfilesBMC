@@ -153,4 +153,4 @@ items:
     permission: "custom.permission"
     lore: []
     leftClickCommands:
-      - "[CONSOLE] playerprofiles openprofile {target} {player}"
+      - "[CONSOLE] bmcplayerprofile openprofile {target} {player}"

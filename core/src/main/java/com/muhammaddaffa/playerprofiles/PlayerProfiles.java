@@ -2,6 +2,7 @@ package com.muhammaddaffa.playerprofiles;
 
 import com.muhammaddaffa.mdlib.MDLib;
 import com.muhammaddaffa.mdlib.utils.Config;
+import com.muhammaddaffa.playerprofiles.commands.BMCPlayerProfileReloadCommand;
 import com.muhammaddaffa.playerprofiles.commands.LockCommand;
 import com.muhammaddaffa.playerprofiles.commands.MainCommand;
 import com.muhammaddaffa.playerprofiles.commands.ProfileCommand;
@@ -112,9 +113,11 @@ public class PlayerProfiles extends JavaPlugin {
     }
 
     private void registerCommands(){
-        // Register /playerprofiles command
+        // Register /bmcplayerprofile command
         new MainCommand(this).registerThisCommand();
-        // Register /profile command
+        // Register /bmcplayerprofilereload command
+        new BMCPlayerProfileReloadCommand(this).registerThisCommand();
+        // Register /vprofile command
         new ProfileCommand(this).registerThisCommand();
         // Register /lockprofile command
         new LockCommand(this).registerThisCommand();

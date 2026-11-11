@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class MainCommand implements CommandExecutor, TabCompleter {
 
-    private static final String COMMAND_NAME = "playerprofiles";
+    private static final String COMMAND_NAME = "bmcplayerprofile";
 
     private final Map<String, SubCommand> subCommandMap = new HashMap<>();
 
@@ -51,9 +51,16 @@ public class MainCommand implements CommandExecutor, TabCompleter {
         command.setExecutor(this);
         command.setTabCompleter(this);
 
-        FileConfiguration config = PlayerProfiles.CONFIG_DEFAULT.getConfig();
-        List<String> aliases = config.getStringList("commandAliases.playerProfiles");
-        command.getAliases().addAll(aliases);
+        FileConfiguration configuration = PlayerProfiles.CONFIG_DEFAULT.getConfig();
+        List<String> aliasesList = configuration.getStringList("commandAliases.bmcplayerprofile");
+        if (aliasesList.isEmpty()) {
+            aliasesList = configuration.getStringList("commandAliases.playerProfiles");
+        }
+        for (String aliasName : aliasesList) {
+            if (!command.getAliases().contains(aliasName)) {
+                command.getAliases().add(aliasName);
+            }
+        }
 
         try {
             CommandMap commandMap = null;
@@ -69,33 +76,27 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                 commandMap.register(COMMAND_NAME, command);
             }
         } catch (Exception ex){
-            Logger.info("&cFailed to register /playerprofiles command");
+            Logger.info("&cFailed to register /bmcplayerprofile command");
         }
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 
-        // Return if the args length is 0 and send help messages
-        if(args.length == 0){
+        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
             this.sendHelpMessages(sender);
             return true;
         }
 
-        // Trying to get subcommand from 'args[0]'
         SubCommand subCommand = this.subCommandMap.get(args[0].toLowerCase());
 
-        // Return if there is no subcommand with 'args[0]' and send help messages
-        if(subCommand == null) {
+        if (subCommand == null) {
             this.sendHelpMessages(sender);
             return true;
         }
 
-        // Check if sub command has permission
-        if(subCommand.getPermission() != null){
-            // Check if sender/player doesn't have permission for the subcommand
-            if(!(sender.hasPermission(subCommand.getPermission()))){
-                // Return and send messages
+        if (subCommand.getPermission() != null) {
+            if (!(sender.hasPermission(subCommand.getPermission()))) {
                 sender.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
                         .replace("{prefix}", ConfigValue.PREFIX)
                         .replace("{permission}", subCommand.getPermission())));
@@ -103,7 +104,6 @@ public class MainCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        // Execute the sub command
         subCommand.execute(plugin, sender, args);
         return true;
     }
@@ -111,18 +111,22 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 
-        if(args.length == 1){
-            return new ArrayList<>(this.subCommandMap.keySet());
+        if (args.length == 1) {
+            List<String> completionOptions = new ArrayList<>(this.subCommandMap.keySet());
+            if (!completionOptions.contains("help")) {
+                completionOptions.add("help");
+            }
+            return completionOptions;
         }
 
-        if(args.length >= 2){
+        if (args.length >= 2) {
             SubCommand subCommand = this.subCommandMap.get(args[0].toLowerCase());
-            if(subCommand == null) return null;
+            if (subCommand == null) return null;
 
-            if(subCommand.getPermission() == null){
+            if (subCommand.getPermission() == null) {
                 return subCommand.parseTabCompletion(plugin, sender, args);
             }
-            if(sender.hasPermission(subCommand.getPermission())){
+            if (sender.hasPermission(subCommand.getPermission())) {
                 return subCommand.parseTabCompletion(plugin, sender, args);
             }
             return new ArrayList<>();

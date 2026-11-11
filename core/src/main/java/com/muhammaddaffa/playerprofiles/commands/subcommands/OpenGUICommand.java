@@ -38,10 +38,10 @@ public class OpenGUICommand extends SubCommand {
 
     @Override
     public void execute(PlayerProfiles plugin, CommandSender sender, String[] args) {
-        // The full command is /playerprofiles opengui (player) (target) (gui-name) - args length = 4
+        // The full command is /bmcplayerprofile opengui (player) (target) (gui-name) - args length = 4
         // So we want to tell the command sender if the the args doesn't enough
         if(args.length < 4){
-            sender.sendMessage(Utils.color("&cUsage: /playerprofiles opengui (player) (target) (gui-name)"));
+            sender.sendMessage(Utils.color("&cUsage: /bmcplayerprofile opengui (player) (target) (gui-name)"));
             return;
         }
         // First get the player object from args[1]

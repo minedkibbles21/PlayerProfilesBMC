@@ -8,8 +8,10 @@ folia-supported: true
 softdepend: [CombatLogX, DeluxeCombat, PlaceholderAPI, WorldGuard, WorldEdit, zMenu, floodgate]
 
 commands:
-  playerprofiles:
-    aliases: []
+  bmcplayerprofile:
+    aliases: [bmcplayerprofiles, playerprofiles, playerprofile, pp, playerp]
+  bmcplayerprofilereload:
+    aliases: [bmcprofilereload, playerprofilesreload]
   vprofile:
     aliases: []
   unlockProfile:

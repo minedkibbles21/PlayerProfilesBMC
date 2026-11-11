@@ -256,6 +256,18 @@ public class BehaviorChecks {
         assert !com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(combatUuid, now + 31_000L) : "Should no longer be in combat after 30 seconds";
         com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.clear(combatUuid);
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, and 30s combat timer.");
+        // Verify bmcplayerprofile and bmcplayerprofilereload in config and plugin descriptors
+        YamlConfiguration configDesc = YamlConfiguration.loadConfiguration(new File("core/src/main/resources/config.yml"));
+        List<String> bmcAliases = configDesc.getStringList("commandAliases.bmcplayerprofile");
+        assert bmcAliases.contains("bmcplayerprofiles") && bmcAliases.contains("playerprofile");
+        List<String> reloadAliases = configDesc.getStringList("commandAliases.bmcplayerprofilereload");
+        assert reloadAliases.contains("bmcprofilereload");
+
+        YamlConfiguration pluginDesc = YamlConfiguration.loadConfiguration(new File("core/src/main/resources/plugin.yml"));
+        assert pluginDesc.contains("commands.bmcplayerprofile");
+        assert pluginDesc.contains("commands.bmcplayerprofilereload");
+        assert pluginDesc.contains("commands.vprofile");
+
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, and bmcplayerprofile commands.");
     }
 }

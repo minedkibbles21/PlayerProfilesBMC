@@ -81,6 +81,12 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        String targetQuery = args[0];
+        if (targetQuery.equalsIgnoreCase("reload")) {
+            player.sendMessage(Utils.color("&c/vprofile reload has been removed. Use &e/bmcplayerprofilereload &cto reload configuration files."));
+            return true;
+        }
+
         if (!player.hasPermission("playerprofiles.vprofile.others") && !player.hasPermission("playerprofiles.profile.others")) {
             player.sendMessage(Utils.color(ConfigValue.NO_PERMISSION
                     .replace("{prefix}", ConfigValue.PREFIX)
@@ -88,7 +94,6 @@ public class ProfileCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String targetQuery = args[0];
         Player onlineTarget = Bukkit.getPlayer(targetQuery);
         if (onlineTarget != null && onlineTarget.isOnline()) {
             inventoryManager.openInventory(null, player, onlineTarget);
