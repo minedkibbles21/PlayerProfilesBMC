@@ -21,7 +21,13 @@ public class ConfigValue {
     public static boolean DISABLE_NPC_PROFILE;
     public static boolean MUST_SHIFT_CLICK;
     public static boolean DISABLE_IN_COMBAT_ENABLED;
+    public static int DISABLE_IN_COMBAT_DURATION;
+    public static boolean DISABLE_IN_COMBAT_PVP;
+    public static boolean DISABLE_IN_COMBAT_PVE;
+    public static boolean DISABLE_IN_COMBAT_CLOSE_ON_DAMAGE;
+    public static boolean DISABLE_IN_COMBAT_CHECK_TARGET;
     public static String DISABLE_IN_COMBAT_MESSAGE;
+    public static String DISABLE_IN_COMBAT_TARGET_MESSAGE;
 
     // zMenu
     public static boolean ZMENU_ENABLED;
@@ -70,8 +76,14 @@ public class ConfigValue {
 
         DISABLE_NPC_PROFILE = config.getBoolean("options.disableNPC");
         MUST_SHIFT_CLICK = config.getBoolean("options.shiftClick");
-        DISABLE_IN_COMBAT_ENABLED = config.getBoolean("options.disableInCombat.enabled");
-        DISABLE_IN_COMBAT_MESSAGE = config.getString("options.disableInCombat.message");
+        DISABLE_IN_COMBAT_ENABLED = config.getBoolean("options.disableInCombat.enabled", true);
+        DISABLE_IN_COMBAT_DURATION = Math.max(0, config.getInt("options.disableInCombat.duration", 30));
+        DISABLE_IN_COMBAT_PVP = config.getBoolean("options.disableInCombat.pvp", true);
+        DISABLE_IN_COMBAT_PVE = config.getBoolean("options.disableInCombat.pve", false);
+        DISABLE_IN_COMBAT_CLOSE_ON_DAMAGE = config.getBoolean("options.disableInCombat.closeMenuOnDamage", true);
+        DISABLE_IN_COMBAT_CHECK_TARGET = config.getBoolean("options.disableInCombat.checkTarget", false);
+        DISABLE_IN_COMBAT_MESSAGE = config.getString("options.disableInCombat.message", "{prefix} &cYou are not allowed to open profile while in combat!");
+        DISABLE_IN_COMBAT_TARGET_MESSAGE = config.getString("options.disableInCombat.targetMessage", "{prefix} &cYou cannot view {player}'s profile while they are in combat!");
 
         ZMENU_ENABLED = config.getBoolean("zmenu.enabled", false);
         ZMENU_PROFILE_MENU = config.getString("zmenu.profileMenu", "profile");

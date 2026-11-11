@@ -244,6 +244,18 @@ public class BehaviorChecks {
             new File("world").delete();
         }
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment and directory paths.");
+        // Verify 30-second combat timer functionality
+        UUID combatUuid = UUID.randomUUID();
+        long now = System.currentTimeMillis();
+        com.muhammaddaffa.playerprofiles.ConfigValue.DISABLE_IN_COMBAT_ENABLED = true;
+        com.muhammaddaffa.playerprofiles.ConfigValue.DISABLE_IN_COMBAT_DURATION = 30;
+        com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.tagCombat(combatUuid, 30, now);
+        assert com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(combatUuid, now) : "Should be in combat at t=0";
+        assert com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.getRemainingSeconds(combatUuid, now) == 30L : "Remaining seconds should be 30";
+        assert com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.getRemainingSeconds(combatUuid, now + 10_000L) == 20L : "Remaining seconds should be 20 at t+10s";
+        assert !com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(combatUuid, now + 31_000L) : "Should no longer be in combat after 30 seconds";
+        com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.clear(combatUuid);
+
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, and 30s combat timer.");
     }
 }

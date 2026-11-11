@@ -62,6 +62,18 @@ public class PlayerProfilesExpansion extends PlaceholderExpansion {
             if (player == null) return "🔓";
             return plugin.getProfileManager().isProfileLocked(player.getUniqueId()) ? "🔒" : "🔓";
         }
+        if (lower.equals("in_combat")) {
+            if (player instanceof Player onlinePlayer) {
+                return com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(onlinePlayer) ? "true" : "false";
+            }
+            return "false";
+        }
+        if (lower.equals("combat_time")) {
+            if (player instanceof Player onlinePlayer) {
+                return String.valueOf(com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.getRemainingSeconds(onlinePlayer));
+            }
+            return "0";
+        }
         if (lower.startsWith("locked_")) {
             String targetName = params.substring("locked_".length());
             OfflinePlayer target = resolveTarget(targetName);

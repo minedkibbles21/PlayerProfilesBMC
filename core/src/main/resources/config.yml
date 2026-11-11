@@ -3,14 +3,26 @@
 #   (disableNPC) Should we disable viewing the NPC's profile?
 #   (disableInCombat)
 #     (enabled) Should we prevent player from opening profile while in combat?
-#     (message) The message that will be sent if player trying to open profile while in combat
+#     (duration) Combat timer duration in seconds (menu will not open via shift-click or /vprofile).
+#     (pvp) Tag player in combat when dealing or taking damage from another player.
+#     (pve) Tag player in combat when dealing or taking damage from mobs.
+#     (closeMenuOnDamage) Close an already open profile immediately if the viewer takes damage.
+#     (checkTarget) Also prevent opening profile if the target player is in combat.
+#     (message) Message sent if the viewer is in combat (supports {time} for seconds remaining).
+#     (targetMessage) Message sent if the target is in combat (supports {player} and {time}).
 #   (shiftClick) Should player open profile by shift clicking?
 #                If disabled, right click will open player profile
 options:
   disableNPC: true #Disable player from viewing NPC profile.
   disableInCombat:
     enabled: true
-    message: "{prefix} &cYou are not allowed to open profile while in combat!"
+    duration: 30 # Combat timer in seconds
+    pvp: true
+    pve: false
+    closeMenuOnDamage: true
+    checkTarget: false
+    message: "{prefix} &cYou are not allowed to open profile while in combat! ({time}s remaining)"
+    targetMessage: "{prefix} &cYou cannot view {player}'s profile while they are in combat! ({time}s remaining)"
   shiftClick: true
 
 # Delegate opening player profiles to a zMenu inventory

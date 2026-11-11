@@ -12,6 +12,7 @@ import com.muhammaddaffa.playerprofiles.hooks.placeholderapi.PlayerProfilesExpan
 import com.muhammaddaffa.playerprofiles.inventory.InventoryManager;
 import com.muhammaddaffa.playerprofiles.listeners.PlayerInteract;
 import com.muhammaddaffa.playerprofiles.manager.DependencyManager;
+import com.muhammaddaffa.playerprofiles.manager.combat.CombatManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUIManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGuiCreator;
 import com.muhammaddaffa.playerprofiles.manager.profile.ProfileManager;
@@ -29,6 +30,7 @@ public class PlayerProfiles extends JavaPlugin {
     private final ProfileManager profileManager = new ProfileManager();
     private final PlayerInteract playerInteract = new PlayerInteract(this);
     private final CustomGuiCreator customGuiCreator = new CustomGuiCreator(this);
+    private final CombatManager combatManager = new CombatManager();
 
     @Override
     public void onLoad() {
@@ -61,8 +63,9 @@ public class PlayerProfiles extends JavaPlugin {
         customGUIManager.loadCustomGUI();
         // Load all profile data
         profileManager.loadProfileData();
-        // Register the player interact event
+        // Register the player interact and combat events
         Bukkit.getPluginManager().registerEvents(playerInteract, this);
+        Bukkit.getPluginManager().registerEvents(combatManager, this);
         // Register all commands
         registerCommands();
         com.muhammaddaffa.mdlib.utils.Logger.info("&6[BMCPlayerProfiles] &eBendersMC Private Build - Authorized for BMC Devs only.");
@@ -73,6 +76,7 @@ public class PlayerProfiles extends JavaPlugin {
         try {
             inventoryManager.closeInventories();
             profileManager.saveProfileData();
+            CombatManager.clearAll();
         } finally {
             MDLib.shutdown();
             instance = null;
@@ -98,6 +102,7 @@ public class PlayerProfiles extends JavaPlugin {
         // Re-initialize the config value
         ConfigValue.initialize();
         if (!ConfigValue.COOLDOWN_ENABLED) playerInteract.clearCooldowns();
+        CombatManager.clearAll();
         // Reload all items for the profile inventory
         inventoryManager.reInitialize();
         // Reload all custom gui creator

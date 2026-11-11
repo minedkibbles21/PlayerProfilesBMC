@@ -69,6 +69,10 @@ public class Utils {
         }
 
         Player onlineTarget = target.getPlayer();
+        boolean playerInCombat = com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(player);
+        boolean targetInCombat = onlineTarget != null && com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.isInCombat(onlineTarget);
+        long playerCombatTime = com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.getRemainingSeconds(player);
+        long targetCombatTime = onlineTarget != null ? com.muhammaddaffa.playerprofiles.manager.combat.CombatManager.getRemainingSeconds(onlineTarget) : 0L;
 
         return papiApplied
                 .replace("{player}", player.getName())
@@ -81,6 +85,10 @@ public class Utils {
                 .replace("{target_status_plain}", targetStatusPlain)
                 .replace("{player_status_symbol}", playerSymbol)
                 .replace("{target_status_symbol}", targetSymbol)
+                .replace("{player_in_combat}", String.valueOf(playerInCombat))
+                .replace("{target_in_combat}", String.valueOf(targetInCombat))
+                .replace("{player_combat_time}", String.valueOf(playerCombatTime))
+                .replace("{target_combat_time}", String.valueOf(targetCombatTime))
                 .replace("{target_is_bedrock}", String.valueOf(target.isBedrock()))
                 .replace("{player_health}", String.valueOf(player.getHealth()))
                 .replace("{target_health}", onlineTarget != null ? String.valueOf(onlineTarget.getHealth()) : "0")

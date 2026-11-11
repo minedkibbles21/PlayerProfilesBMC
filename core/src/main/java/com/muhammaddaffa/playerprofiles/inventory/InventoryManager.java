@@ -8,6 +8,7 @@ import com.muhammaddaffa.playerprofiles.hooks.combatlogx.HCombatLogX;
 import com.muhammaddaffa.playerprofiles.hooks.deluxecombat.HDeluxeCombat;
 import com.muhammaddaffa.playerprofiles.inventory.items.ItemsLoader;
 import com.muhammaddaffa.playerprofiles.manager.DependencyManager;
+import com.muhammaddaffa.playerprofiles.manager.combat.CombatManager;
 import com.muhammaddaffa.playerprofiles.manager.customgui.CustomGUI;
 import com.muhammaddaffa.playerprofiles.utils.Utils;
 import com.muhammaddaffa.playerprofiles.worldguardwrapper.WorldGuardWrapper;
@@ -102,7 +103,7 @@ public class InventoryManager {
             return false;
         }
         if (DependencyManager.WORLD_GUARD && Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            var finder = WorldGuardWrapper.getInstance().getRegionFinder();
+            com.muhammaddaffa.api.IRegionFinder finder = WorldGuardWrapper.getInstance().getRegionFinder();
             if (finder.getRegions(player.getLocation()).stream().anyMatch(ConfigValue.DISABLED_REGIONS::contains)) {
                 tell(player, ConfigValue.PLAYER_DISABLED_REGIONS);
                 return false;
@@ -114,11 +115,23 @@ public class InventoryManager {
                 }
             }
         }
-        if (ConfigValue.DISABLE_IN_COMBAT_ENABLED &&
-                ((DependencyManager.COMBAT_LOG_X && HCombatLogX.isInCombat(player)) ||
-                 (DependencyManager.DELUXE_COMBAT && HDeluxeCombat.isInCombat(player)))) {
-            tell(player, ConfigValue.DISABLE_IN_COMBAT_MESSAGE);
-            return false;
+        if (ConfigValue.DISABLE_IN_COMBAT_ENABLED) {
+            if (CombatManager.isInCombat(player)) {
+                long remaining = CombatManager.getRemainingSeconds(player);
+                tell(player, ConfigValue.DISABLE_IN_COMBAT_MESSAGE
+                        .replace("{time}", String.valueOf(remaining)));
+                return false;
+            }
+            if (ConfigValue.DISABLE_IN_COMBAT_CHECK_TARGET && target.isOnline() && target.getPlayer() != null) {
+                Player onlineTarget = target.getPlayer();
+                if (CombatManager.isInCombat(onlineTarget)) {
+                    long remaining = CombatManager.getRemainingSeconds(onlineTarget);
+                    tell(player, ConfigValue.DISABLE_IN_COMBAT_TARGET_MESSAGE
+                            .replace("{player}", onlineTarget.getName())
+                            .replace("{time}", String.valueOf(remaining)));
+                    return false;
+                }
+            }
         }
         return true;
     }
