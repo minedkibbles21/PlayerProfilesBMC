@@ -457,6 +457,30 @@ public class PlayerDataLoader {
             if (components.has("minecraft:custom_model_data")) {
                 meta.setCustomModelData(components.getInt("minecraft:custom_model_data"));
             }
+            if (components.has("minecraft:item_model") && ItemManager.isVersionAtLeast(1, 21, 2)) {
+                String modelId = components.getString("minecraft:item_model");
+                if (!modelId.isBlank()) {
+                    try {
+                        NamespacedKey modelKey = NamespacedKey.fromString(modelId);
+                        if (modelKey != null) meta.setItemModel(modelKey);
+                    } catch (Throwable ignored) {}
+                }
+            }
+            if (components.has("minecraft:unbreakable")) {
+                meta.setUnbreakable(true);
+            }
+            if (components.has("minecraft:dyed_color") && meta instanceof org.bukkit.inventory.meta.LeatherArmorMeta leatherMeta) {
+                Object colorVal = components.get("minecraft:dyed_color");
+                int rgb = 0;
+                if (colorVal instanceof Number num) {
+                    rgb = num.intValue();
+                } else if (colorVal instanceof NBTCompound colorComp && colorComp.has("rgb")) {
+                    rgb = colorComp.getInt("rgb");
+                }
+                if (rgb != 0) {
+                    leatherMeta.setColor(org.bukkit.Color.fromRGB(rgb & 0xFFFFFF));
+                }
+            }
             NBTCompound enchants = components.getCompound("minecraft:enchantments");
             if (enchants != null) {
                 NBTCompound levels = enchants.getCompound("levels");
@@ -511,17 +535,21 @@ public class PlayerDataLoader {
         return stack;
     }
 
-    private static Enchantment parseEnchantment(String key) {
-        if (key == null || key.isBlank()) return null;
+    private static Enchantment parseEnchantment(String enchIdentifier) {
+        if (enchIdentifier == null || enchIdentifier.isBlank()) return null;
         try {
-            NamespacedKey nsKey = NamespacedKey.fromString(key.toLowerCase(Locale.ROOT));
+            NamespacedKey nsKey = NamespacedKey.fromString(enchIdentifier.toLowerCase(Locale.ROOT));
             if (nsKey != null) {
-                Enchantment ench = Enchantment.getByKey(nsKey);
-                if (ench != null) return ench;
+                try {
+                    Enchantment registryEnch = org.bukkit.Registry.ENCHANTMENT.get(nsKey);
+                    if (registryEnch != null) return registryEnch;
+                } catch (Throwable ignored) {}
+                Enchantment directEnch = Enchantment.getByKey(nsKey);
+                if (directEnch != null) return directEnch;
             }
         } catch (Exception ignored) {}
-        String clean = key.replace("minecraft:", "").toUpperCase(Locale.ROOT);
-        return Enchantment.getByName(clean);
+        String cleanName = enchIdentifier.replace("minecraft:", "").toUpperCase(Locale.ROOT);
+        return Enchantment.getByName(cleanName);
     }
 
     private static String cleanJsonText(String text) {

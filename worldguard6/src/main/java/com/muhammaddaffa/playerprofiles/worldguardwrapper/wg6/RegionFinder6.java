@@ -6,23 +6,24 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RegionFinder6 implements IRegionFinder {
 
     @Override
     public List<String> getRegions(Location location) {
-        // Get the ApplicableRegionSet from the location
-        com.sk89q.worldguard.protection.ApplicableRegionSet ars = WGBukkit.getPlugin().getRegionContainer().createQuery().getApplicableRegions(location);
-        // Create an empty array list of string
-        List<String> regions = new ArrayList<>();
-        // Loop through all regions in the location
-        for(ProtectedRegion region : ars){
-            // Add the region name to the list
-            regions.add(region.getId());
+        if (location == null || location.getWorld() == null) return Collections.emptyList();
+        try {
+            com.sk89q.worldguard.protection.ApplicableRegionSet ars = WGBukkit.getPlugin().getRegionContainer().createQuery().getApplicableRegions(location);
+            List<String> regionNames = new ArrayList<>();
+            for (ProtectedRegion region : ars) {
+                regionNames.add(region.getId());
+            }
+            return regionNames;
+        } catch (Throwable t) {
+            return Collections.emptyList();
         }
-        // Finally, return the list of regions name
-        return regions;
     }
 
 }

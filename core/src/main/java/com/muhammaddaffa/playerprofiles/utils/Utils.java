@@ -102,29 +102,21 @@ public class Utils {
         return messages.stream().map(message -> tryParsePAPI(message, player, target)).collect(Collectors.toList());
     }
 
-    public static void playSound(Player player, String soundPath){
-        // Get the config.yml
+    public static void playSound(Player player, String soundPath) {
+        if (player == null || !player.isOnline()) return;
         FileConfiguration config = PlayerProfiles.CONFIG_DEFAULT.getConfig();
-        // Get the path to the sound
         String path = "sounds." + soundPath;
-        // Return if the sound isn't enabled
-        if(!config.getBoolean(path + ".enabled"))
-            return;
-        // Get the 1.8 - 1.17 sound support optional
-        Optional<XSound> optional = XSound.matchXSound(config.getString(path + ".sound"));
-        // If the sound is invalid, return
-        if(!optional.isPresent())
-            return;
-        // Get the player location
-        Location location = player.getLocation();
-        // Get the sound from the optional XSound
-        Sound sound = optional.get().parseSound();
-        // Get the volume
-        float volume = (float) config.getDouble(path + ".volume");
-        // Get the pitch
-        float pitch = (float) config.getDouble(path + ".pitch");
-        // Finally play the sound to the player
-        if (sound != null) player.playSound(location, sound, volume, pitch);
+        if (!config.getBoolean(path + ".enabled")) return;
+
+        Optional<XSound> optionalSound = XSound.matchXSound(config.getString(path + ".sound"));
+        if (optionalSound.isEmpty()) return;
+
+        Sound sound = optionalSound.get().parseSound();
+        if (sound == null) return;
+
+        float volume = (float) config.getDouble(path + ".volume", 1.0);
+        float pitch = (float) config.getDouble(path + ".pitch", 1.0);
+        player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
     public static boolean hasOffHand() {

@@ -50,9 +50,9 @@ public class NBTReader {
             case 6 -> in.readDouble();
             case 7 -> {
                 int len = in.readInt();
-                byte[] data = new byte[Math.max(0, len)];
-                in.readFully(data);
-                yield data;
+                byte[] payloadBytes = new byte[Math.max(0, len)];
+                in.readFully(payloadBytes);
+                yield payloadBytes;
             }
             case 8 -> in.readUTF();
             case 9 -> {
@@ -67,19 +67,19 @@ public class NBTReader {
             case 10 -> readCompound(in);
             case 11 -> {
                 int len = in.readInt();
-                int[] data = new int[Math.max(0, len)];
+                int[] payloadInts = new int[Math.max(0, len)];
                 for (int i = 0; i < len; i++) {
-                    data[i] = in.readInt();
+                    payloadInts[i] = in.readInt();
                 }
-                yield data;
+                yield payloadInts;
             }
             case 12 -> {
                 int len = in.readInt();
-                long[] data = new long[Math.max(0, len)];
+                long[] payloadLongs = new long[Math.max(0, len)];
                 for (int i = 0; i < len; i++) {
-                    data[i] = in.readLong();
+                    payloadLongs[i] = in.readLong();
                 }
-                yield data;
+                yield payloadLongs;
             }
             default -> throw new IOException("Unsupported NBT tag type: " + type);
         };

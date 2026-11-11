@@ -19,59 +19,59 @@ import java.util.Optional;
 
 public class ItemManager {
 
-    public static ItemStack createItem(GUIItem item, Player player, Player target) {
-        return createItem(item, player, ProfileTarget.of(target));
+    public static ItemStack createItem(GUIItem guiEntry, Player player, Player target) {
+        return createItem(guiEntry, player, ProfileTarget.of(target));
     }
 
-    public static ItemStack createItem(GUIItem item, Player player, ProfileTarget target) {
-        if (item.material().isBlank()) return errorItem(item);
+    public static ItemStack createItem(GUIItem guiEntry, Player player, ProfileTarget target) {
+        if (guiEntry.material().isBlank()) return errorItem(guiEntry);
         ItemBuilder builder;
-        if (item.material().contains(";")) {
-            String[] parts = item.material().split(";", 2);
-            if (parts[1].isBlank()) return errorItem(item);
+        if (guiEntry.material().contains(";")) {
+            String[] parts = guiEntry.material().split(";", 2);
+            if (parts[1].isBlank()) return errorItem(guiEntry);
             switch (parts[0].toUpperCase(java.util.Locale.ROOT)) {
                 case "SLOT", "SLOTS" -> {
-                    ItemStack stack = slotItem(item, target, parts[1]);
+                    ItemStack stack = slotItem(guiEntry, target, parts[1]);
                     if (stack.getType() == Material.AIR) return stack;
                     builder = new ItemBuilder(stack);
                 }
-                case "HEAD", "HEADS" -> builder = headBuilder(item, player, target, parts[1]);
-                default -> { return errorItem(item); }
+                case "HEAD", "HEADS" -> builder = headBuilder(guiEntry, player, target, parts[1]);
+                default -> { return errorItem(guiEntry); }
             }
         } else {
-            Optional<XMaterial> material = XMaterial.matchXMaterial(item.material());
+            Optional<XMaterial> material = XMaterial.matchXMaterial(guiEntry.material());
             ItemStack stack = material.map(XMaterial::parseItem).orElse(null);
-            if (stack == null) return errorItem(item);
+            if (stack == null) return errorItem(guiEntry);
             if (stack.getType().isAir()) return stack;
-            if (stack.getItemMeta() == null) return errorItem(item);
-            builder = configuredBuilder(item, player, target, stack);
+            if (stack.getItemMeta() == null) return errorItem(guiEntry);
+            builder = configuredBuilder(guiEntry, player, target, stack);
         }
-        if (item.hideAttributes()) builder.flags(ItemFlag.HIDE_ATTRIBUTES);
-        if (item.glowing()) builder.enchant(Enchantment.UNBREAKING).flags(ItemFlag.HIDE_ENCHANTS);
+        if (guiEntry.hideAttributes()) builder.flags(ItemFlag.HIDE_ATTRIBUTES);
+        if (guiEntry.glowing()) builder.enchant(Enchantment.UNBREAKING).flags(ItemFlag.HIDE_ENCHANTS);
         ItemStack stack = builder.build();
         ItemMeta meta = stack.getItemMeta();
         if (meta == null) return stack;
-        String model = item.itemModel();
+        String model = guiEntry.itemModel();
         if (isVersionAtLeast(1, 21, 2) && model != null && !model.isEmpty()) {
             NamespacedKey key = NamespacedKey.fromString(model);
-            if (key == null) return errorItem(item);
+            if (key == null) return errorItem(guiEntry);
             meta.setItemModel(key);
             stack.setItemMeta(meta);
         }
         return stack;
     }
 
-    private static ItemBuilder configuredBuilder(GUIItem item, Player player, ProfileTarget target, ItemStack stack) {
+    private static ItemBuilder configuredBuilder(GUIItem guiEntry, Player player, ProfileTarget target, ItemStack stack) {
         return new ItemBuilder(stack)
-                .name(Utils.tryParsePAPI(item.name(), player, target))
-                .lore(Utils.tryParsePAPI(item.lore(), player, target))
-                .amount(Math.max(1, item.amount()))
-                .customModelData(item.customModelData());
+                .name(Utils.tryParsePAPI(guiEntry.name(), player, target))
+                .lore(Utils.tryParsePAPI(guiEntry.lore(), player, target))
+                .amount(Math.max(1, guiEntry.amount()))
+                .customModelData(guiEntry.customModelData());
     }
 
-    private static ItemBuilder headBuilder(GUIItem item, Player player, ProfileTarget target, String value) {
-        ItemBuilder builder = configuredBuilder(item, player, target, new ItemStack(Material.PLAYER_HEAD));
-        String identifier = value.replace("{player}", player.getName()).replace("{target}", target.getName());
+    private static ItemBuilder headBuilder(GUIItem guiEntry, Player player, ProfileTarget target, String textValue) {
+        ItemBuilder builder = configuredBuilder(guiEntry, player, target, new ItemStack(Material.PLAYER_HEAD));
+        String identifier = textValue.replace("{player}", player.getName()).replace("{target}", target.getName());
         try {
             if (identifier.equals(player.getName())) {
                 builder.skull(player);
@@ -85,90 +85,100 @@ public class ItemManager {
                 builder.skull(identifier);
             }
         } catch (RuntimeException ex) {
-            // An untextured player head is a valid fallback for an invalid texture.
-            builder = configuredBuilder(item, player, target, new ItemStack(Material.PLAYER_HEAD));
+            builder = configuredBuilder(guiEntry, player, target, new ItemStack(Material.PLAYER_HEAD));
         }
         return builder;
     }
 
-    private static ItemStack slotItem(GUIItem item, ProfileTarget target, String value) {
+    private static ItemStack slotItem(GUIItem guiEntry, ProfileTarget target, String slotIndex) {
         try {
-            int slot = Integer.parseInt(value);
+            int slot = Integer.parseInt(slotIndex);
             return target.getItem(slot);
         } catch (NumberFormatException ex) {
-            return errorItem(item);
+            return errorItem(guiEntry);
         }
     }
 
-    public static ItemStack createGUIItem(GUIItem item, Player player, Player target) {
-        return createGUIItem(item, player, ProfileTarget.of(target));
+    public static ItemStack createGUIItem(GUIItem guiEntry, Player player, Player target) {
+        return createGUIItem(guiEntry, player, ProfileTarget.of(target));
     }
 
-    public static ItemStack createGUIItem(GUIItem item, Player player, ProfileTarget target) {
-        if (item.type().contains(";")) {
-            String[] parts = item.type().split(";", 2);
-            if (parts[1].isBlank()) return errorItem(item);
+    public static ItemStack createGUIItem(GUIItem guiEntry, Player player, ProfileTarget target) {
+        if (guiEntry.type().contains(";")) {
+            String[] parts = guiEntry.type().split(";", 2);
+            if (parts[1].isBlank()) return errorItem(guiEntry);
             return switch (parts[0].toUpperCase(java.util.Locale.ROOT)) {
-                case "SLOT", "SLOTS" -> slotItem(item, target, parts[1]);
-                case "HEAD", "HEADS" -> headBuilder(item, player, target, parts[1]).build();
-                default -> errorItem(item);
+                case "SLOT", "SLOTS" -> slotItem(guiEntry, target, parts[1]);
+                case "HEAD", "HEADS" -> headBuilder(guiEntry, player, target, parts[1]).build();
+                default -> errorItem(guiEntry);
             };
         }
-        return switch (item.type()) {
-            case "HELMET" -> createArmorItem(item, player, target, target.getHelmet());
-            case "CHESTPLATE" -> createArmorItem(item, player, target, target.getChestplate());
-            case "LEGGINGS" -> createArmorItem(item, player, target, target.getLeggings());
-            case "BOOTS" -> createArmorItem(item, player, target, target.getBoots());
-            case "MAIN_HAND" -> createArmorItem(item, player, target, target.getMainHand());
-            case "OFF_HAND" -> createArmorItem(item, player, target, target.getOffHand());
-            default -> createItem(item, player, target);
+        return switch (guiEntry.type()) {
+            case "HELMET" -> createArmorItem(guiEntry, player, target, target.getHelmet());
+            case "CHESTPLATE" -> createArmorItem(guiEntry, player, target, target.getChestplate());
+            case "LEGGINGS" -> createArmorItem(guiEntry, player, target, target.getLeggings());
+            case "BOOTS" -> createArmorItem(guiEntry, player, target, target.getBoots());
+            case "MAIN_HAND" -> createArmorItem(guiEntry, player, target, target.getMainHand());
+            case "OFF_HAND" -> createArmorItem(guiEntry, player, target, target.getOffHand());
+            default -> createItem(guiEntry, player, target);
         };
     }
 
-    public static void fillItem(FastInv inventory, FileConfiguration config){
-        if(!config.getBoolean("fillItems.enabled")) return;
-        // Get the Optional XMaterial
-        String material = config.getString("fillItems.material", "AIR");
-        if (material.isBlank()) return;
-        Optional<XMaterial> optional = XMaterial.matchXMaterial(material);
-        // If the XMaterial isn't present, just return
-        if(!optional.isPresent()) return;
-        // Get the ItemStack if the XMaterial is present
-        ItemStack stack = optional.get().parseItem();
-        if (stack == null || stack.getItemMeta() == null) return;
-        // Item builder boiss.
-        ItemBuilder builder = new ItemBuilder(stack)
+    public static void fillItem(FastInv inventory, FileConfiguration config) {
+        if (!config.getBoolean("fillItems.enabled")) return;
+        String materialName = config.getString("fillItems.material", "AIR");
+        if (materialName.isBlank()) return;
+        Optional<XMaterial> optionalMat = XMaterial.matchXMaterial(materialName);
+        if (optionalMat.isEmpty()) return;
+        ItemStack templateStack = optionalMat.get().parseItem();
+        if (templateStack == null || templateStack.getItemMeta() == null) return;
+
+        ItemBuilder builder = new ItemBuilder(templateStack)
                 .name(Utils.color(config.getString("fillItems.name", "")))
                 .lore(Utils.color(config.getStringList("fillItems.lore")))
                 .customModelData(config.getInt("fillItems.customModelData"));
-        // Get the final item stack
+
         ItemStack finalStack = builder.build();
-        // Loop through all inventory slots
-        for (int i = 0; i < inventory.getInventory().getSize(); i++) {
-            // Get the item stack from the slot
+        String fillModel = config.getString("fillItems.itemModel", config.getString("fillItems.item_model", ""));
+        if (isVersionAtLeast(1, 21, 2) && fillModel != null && !fillModel.isBlank()) {
+            NamespacedKey modelKey = NamespacedKey.fromString(fillModel);
+            if (modelKey != null && finalStack.getItemMeta() != null) {
+                ItemMeta fillMeta = finalStack.getItemMeta();
+                fillMeta.setItemModel(modelKey);
+                finalStack.setItemMeta(fillMeta);
+            }
+        }
+
+        int inventorySize = inventory.getInventory().getSize();
+        for (int i = 0; i < inventorySize; i++) {
             ItemStack slotStack = inventory.getInventory().getItem(i);
-            // Skip if the slot is not null and the type is not material AIR
-            if(slotStack != null) continue;
-            // If all going well, we set the slot to the fillter item stack
+            if (slotStack != null) continue;
             inventory.setItem(i, finalStack);
         }
     }
 
-    private static ItemStack createArmorItem(GUIItem item, Player player, ProfileTarget target, ItemStack stack){
-        if(stack == null || stack.getType() == Material.AIR) return createItem(item, player, target);
+    private static ItemStack createArmorItem(GUIItem guiEntry, Player player, ProfileTarget target, ItemStack stack) {
+        if (stack == null || stack.getType() == Material.AIR) return createItem(guiEntry, player, target);
         return stack.clone();
     }
 
-    private static ItemStack errorItem(GUIItem item){
-
+    private static ItemStack errorItem(GUIItem guiEntry) {
         return new ItemBuilder(XMaterial.BARRIER.parseItem())
                 .name("&cInvalid Material!")
-                .lore("&7Please check your configuration for item '{item}'".replace("{item}", item.name()), " ", "&7Additional Information:", "&7Material: {material}".replace("{material}", item.material()))
+                .lore("&7Please check your configuration for item '{item}'".replace("{item}", guiEntry.name()),
+                        " ",
+                        "&7Additional Information:",
+                        "&7Material: {material}".replace("{material}", guiEntry.material()))
                 .build();
     }
 
     public static boolean isVersionAtLeast(int major, int minor, int patch) {
-        return isVersionAtLeast(Bukkit.getBukkitVersion(), major, minor, patch);
+        try {
+            if (Bukkit.getServer() == null) return true;
+            return isVersionAtLeast(Bukkit.getBukkitVersion(), major, minor, patch);
+        } catch (Throwable t) {
+            return true;
+        }
     }
 
     public static boolean isVersionAtLeast(String bukkitVersion, int major, int minor, int patch) {
@@ -191,9 +201,8 @@ public class ItemManager {
             if (min != minor) return min > minor;
             return pat >= patch;
         } catch (NumberFormatException e) {
-            return false; // fallback
+            return false;
         }
     }
-
 
 }

@@ -39,13 +39,20 @@ public class LockCommand implements CommandExecutor, TabCompleter {
         plugin.getCommand(COMMAND_NAME).getAliases().addAll(aliases);
 
         try {
-            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            bukkitCommandMap.setAccessible(true);
-            ((CommandMap) bukkitCommandMap.get(Bukkit.getServer())).register(COMMAND_NAME, plugin.getCommand(COMMAND_NAME));
-            bukkitCommandMap.setAccessible(false);
+            CommandMap commandMap = null;
+            try {
+                commandMap = Bukkit.getCommandMap();
+            } catch (Throwable ignored) {}
+            if (commandMap == null) {
+                Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+                bukkitCommandMap.setAccessible(true);
+                commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+            }
+            if (commandMap != null) {
+                commandMap.register(COMMAND_NAME, plugin.getCommand(COMMAND_NAME));
+            }
         } catch (Exception ex) {
             Logger.info("&cFailed to register /lockprofile command");
-            ex.printStackTrace();
         }
     }
 
