@@ -47,7 +47,8 @@ public class PlayerProfiles extends JavaPlugin {
         // Check the dependency
         DependencyManager.checkDependency();
         // Register PlaceholderAPI expansion if present
-        if (DependencyManager.PLACEHOLDER_API) {
+  if(DependencyManager.PLACEHOLDER_API) {
+
             new PlayerProfilesExpansion(this, "bmcplayerprofiles").register();
             new PlayerProfilesExpansion(this, "bmcplayerpoints").register();
             new PlayerProfilesExpansion(this, "playerprofiles").register();
@@ -113,8 +114,10 @@ public class PlayerProfiles extends JavaPlugin {
     }
 
     private void registerCommands(){
+        // Register /playerprofiles command
         // Register /bmcplayerprofile command
         new MainCommand(this).registerThisCommand();
+        // Register /profile command
         // Register /bmcplayerprofilereload command
         new BMCPlayerProfileReloadCommand(this).registerThisCommand();
         // Register /vprofile command
