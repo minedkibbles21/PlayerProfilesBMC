@@ -83,8 +83,12 @@ public class ProfileInventory extends FastInv {
         for (GUIItem guiEntry : sorted) {
             if (!visible(guiEntry, player, target)) continue;
             ItemStack stack = ItemManager.createGUIItem(guiEntry, player, target);
-            List<Integer> slots = guiEntry.slots().stream()
-                    .filter(slot -> slot != null && slot >= 0 && slot < getInventory().getSize()).toList();
+            List<Integer> slots = new ArrayList<>();
+            for (Integer slotIndex : guiEntry.slots()) {
+                if (slotIndex != null && slotIndex >= 0 && slotIndex < getInventory().getSize()) {
+                    slots.add(slotIndex);
+                }
+            }
             setItems(slots, stack, event -> {
                 event.setCancelled(true);
                 if (!player.isOnline() || (target.isOnline() && !target.getPlayer().isOnline()) ||

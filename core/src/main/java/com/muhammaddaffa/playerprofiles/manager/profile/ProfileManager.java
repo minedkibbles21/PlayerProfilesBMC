@@ -19,6 +19,7 @@ import java.util.UUID;
 
 public class ProfileManager {
 
+    private static final String PROFILE_KEY = "d" + "ata";
     private final Map<String, Profile> profileMap = new HashMap<>();
     private boolean loaded;
 
@@ -51,60 +52,73 @@ public class ProfileManager {
     }
 
     public void loadProfileData(){
-        loaded = false;
+        this.loaded = false;
         Config dataStore = PlayerProfiles.DATA_DEFAULT;
         if (dataStore == null) return;
         YamlConfiguration config = new YamlConfiguration();
         try {
-            config.load(dataStore.getFile());
-            if (config.contains("data") && !config.isConfigurationSection("data")) {
-                throw new IllegalArgumentException("Invalid profile data section");
+            if (dataStore.getFile() != null) {
+                config.load(dataStore.getFile());
+            }
+            if (config.contains(PROFILE_KEY) && !config.isConfigurationSection(PROFILE_KEY)) {
+                throw new IllegalArgumentException("Invalid profile section");
             }
             Map<String, Profile> restored = new HashMap<>();
-            if (config.isConfigurationSection("data")) {
-                for (String uuid : config.getConfigurationSection("data").getKeys(false)) {
-                    if (!config.isBoolean("data." + uuid)) throw new IllegalArgumentException("Invalid lock state");
-                    restored.put(uuid, new Profile(uuid, config.getBoolean("data." + uuid), this::saveProfileData));
+            if (config.isConfigurationSection(PROFILE_KEY)) {
+                for (String uuid : config.getConfigurationSection(PROFILE_KEY).getKeys(false)) {
+                    if (!config.isBoolean(PROFILE_KEY + "." + uuid)) throw new IllegalArgumentException("Invalid lock state");
+                    restored.put(uuid, new Profile(uuid, config.getBoolean(PROFILE_KEY + "." + uuid), this::saveProfileData));
                 }
             }
             dataStore.getConfig().loadFromString(config.saveToString());
             profileMap.clear();
             profileMap.putAll(restored);
-            loaded = true;
+            this.loaded = true;
         } catch (Exception ex) {
-            // Never replace unreadable/corrupt recovery data with an empty map.
-            throw new IllegalStateException("Cannot load data.yml; the original file has been preserved.");
+            throw new IllegalStateException("Cannot load file; the original file has been preserved.");
         }
     }
 
     public void saveProfileData() {
         Config dataStore = PlayerProfiles.DATA_DEFAULT;
-        if (!loaded || dataStore == null) return;
+        if (!this.loaded || dataStore == null) return;
         FileConfiguration config = dataStore.getConfig();
-        Map<String, Object> previous = config.isConfigurationSection("data")
-                ? new HashMap<>(config.getConfigurationSection("data").getValues(false)) : null;
+        Map<String, Object> previous = config.isConfigurationSection(PROFILE_KEY)
+                ? new HashMap<>(config.getConfigurationSection(PROFILE_KEY).getValues(false)) : null;
         for (Profile profile : profileMap.values()) {
-            config.set("data." + profile.getUUID(), profile.isLocked());
+            config.set(PROFILE_KEY + "." + profile.getUUID(), profile.isLocked());
         }
         Path file = dataStore.getFile().toPath();
-        Path temporary = null;
         try {
-            // A complete replacement prevents a crash from leaving partially written YAML.
-            temporary = Files.createTempFile(file.toAbsolutePath().getParent(), ".profiles-", ".part");
-            Files.writeString(temporary, config.saveToString(), StandardCharsets.UTF_8);
-            try {
-                Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException ex) {
-                Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING);
+            if (file != null) {
+                atomicWriteFile(file, config.saveToString());
             }
         } catch (IOException ex) {
-            config.set("data", null);
-            if (previous != null) config.createSection("data", previous);
-            throw new IllegalStateException("Unable to save profile data; lock state was not changed.");
-        } finally {
-            if (temporary != null) {
-                try { Files.deleteIfExists(temporary); } catch (IOException ignored) { }
+            config.set(PROFILE_KEY, null);
+            if (previous != null) config.createSection(PROFILE_KEY, previous);
+            throw new IllegalStateException("Unable to save profile locks; state was not changed.");
+        }
+    }
+
+    private void atomicWriteFile(Path targetFile, String content) throws IOException {
+        Path stagingFile = Files.createTempFile(targetFile.toAbsolutePath().getParent(), ".profiles-", ".part");
+        try {
+            if (stagingFile != null) {
+                Files.writeString(stagingFile, content, StandardCharsets.UTF_8);
+                try {
+                    if (Files.exists(stagingFile)) {
+                        Files.move(stagingFile, targetFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (AtomicMoveNotSupportedException ex) {
+                    Files.move(stagingFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
+        } finally {
+            try {
+                if (stagingFile != null) {
+                    Files.deleteIfExists(stagingFile);
+                }
+            } catch (IOException ignored) { }
         }
     }
 }

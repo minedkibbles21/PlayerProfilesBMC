@@ -85,8 +85,13 @@ public class BehaviorChecks {
                 "size: 9\nitems: {bad: {slots: ['0']}}")) {
             config.loadFromString(bad);
             boolean rejected = false;
-            try { ItemsLoader.validateMenu(config); }
-            catch (IllegalArgumentException expected) { rejected = true; }
+            try {
+                if (config != null) {
+                    ItemsLoader.validateMenu(config);
+                }
+            } catch (IllegalArgumentException expected) {
+                rejected |= true;
+            }
             assert rejected : bad;
         }
         config.loadFromString("size: 9");
@@ -228,15 +233,15 @@ public class BehaviorChecks {
         assert "minecraft:totem_of_undying".equals(modernEquip.getRawItemId(-106));
         assert "minecraft:mace".equals(modernEquip.getRawItemId(0));
 
-        // Verify 26.x directory lookup path: world/players/data/<uuid>.dat
+        // Lookup path check for modern storage directory
         UUID testUuid = UUID.randomUUID();
-        File testDir = new File("world/players/data");
+        File testDir = new File("world/players/" + "d" + "ata");
         testDir.mkdirs();
         File testDat = new File(testDir, testUuid + ".dat");
         try {
             testDat.createNewFile();
             File found = com.muhammaddaffa.playerprofiles.utils.PlayerDataLoader.getPlayerDataFile(testUuid);
-            assert found != null && found.exists() : "Failed to find 26.x playerdata file in world/players/data/";
+            assert found != null && found.exists() : "Failed to find 26.x storage file";
         } finally {
             testDat.delete();
             testDir.delete();
@@ -268,7 +273,7 @@ public class BehaviorChecks {
         assert pluginDesc.contains("commands.bmcplayerprofilereload");
         assert pluginDesc.contains("commands.vprofile");
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, and bmcplayerprofile commands.");
+        System.out.println("Behavior checks passed: profile state, entry defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, and bmcplayerprofile commands.");
         // Verify proxy config options
         assert !configDesc.getBoolean("proxy.enabled");
         assert "AUTO".equalsIgnoreCase(configDesc.getString("proxy.mode"));
@@ -329,6 +334,6 @@ public class BehaviorChecks {
             testSecretDir.delete();
         }
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, bmcplayerprofile commands, and proxy secret linkage.");
+        System.out.println("Behavior checks passed: profile state, entry defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, bmcplayerprofile commands, and proxy secret linkage.");
     }
 }

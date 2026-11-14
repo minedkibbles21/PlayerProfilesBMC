@@ -12,38 +12,37 @@ public class ItemsLoader {
 
     private final List<GUIItem> mainMenuItems = new ArrayList<>();
 
-    public ItemsLoader(PlayerProfiles plugin){
+    public ItemsLoader(PlayerProfiles plugin) {
     }
 
-    public void loadItems(){
+    public void loadItems() {
         loadMainMenuItems();
     }
 
-    public void reloadItems(){
+    public void reloadItems() {
         mainMenuItems.clear();
-
         loadMainMenuItems();
     }
 
-    private void loadMainMenuItems(){
+    private void loadMainMenuItems() {
         FileConfiguration config = PlayerProfiles.GUI_DEFAULT.getConfig();
         try {
-            validateMenu(config);
-            mainMenuItems.addAll(readItems(config));
+            if (config != null) {
+                validateMenu(config);
+                mainMenuItems.addAll(readItems(config));
+            }
         } catch (IllegalArgumentException ex) {
             Logger.severe("Cannot load gui.yml: " + ex.getMessage());
         }
     }
 
     public static List<GUIItem> readItems(FileConfiguration config) {
-        List<GUIItem> items = new ArrayList<>();
-        // Return if there is no items
-        if(!config.isConfigurationSection("items")) return items;
-        // Loop through all items
-        for(String configKey : config.getConfigurationSection("items").getKeys(false)){
+        List<GUIItem> entries = new ArrayList<>();
+        if (!config.isConfigurationSection("items")) return entries;
+        for (String configKey : config.getConfigurationSection("items").getKeys(false)) {
             String path = "items." + configKey;
             if (!config.isConfigurationSection(path)) {
-                throw new IllegalArgumentException("Each menu item must be a configuration section.");
+                throw new IllegalArgumentException("Each menu entry must be a configuration section.");
             }
             String type = config.getString(path + ".type");
             String material = config.getString(path + ".material");
@@ -58,19 +57,15 @@ public class ItemsLoader {
             List<String> leftCommands = config.getStringList(path + ".leftClickCommands");
             List<String> rightCommands = config.getStringList(path + ".rightClickCommands");
             int customModelData = config.getInt(path + ".customModelData");
-            String itemModel = config.getString(path + ".itemModel");
+            String modelPath = config.getString(path + ".itemModel", "");
             boolean onlyOwner = config.getBoolean(path + ".onlyOwner");
             boolean onlyVisitor = config.getBoolean(path + ".onlyVisitor");
             int priority = config.getInt(path + ".priority", 0);
 
-            // Null-safe for item model
-            if (itemModel == null || itemModel.isEmpty()) {
-                itemModel = "";
-            }
-            items.add(new GUIItem(type, material, amount, name, slots, glowing, hideAttributes, usePermission,
-                    permission, lore, leftCommands, rightCommands, customModelData, itemModel, onlyOwner, onlyVisitor, priority));
+            entries.add(new GUIItem(type, material, amount, name, slots, glowing, hideAttributes, usePermission,
+                    permission, lore, leftCommands, rightCommands, customModelData, modelPath, onlyOwner, onlyVisitor, priority));
         }
-        return items;
+        return entries;
     }
 
     public static void validateMenu(FileConfiguration config) {
@@ -79,23 +74,23 @@ public class ItemsLoader {
             throw new IllegalArgumentException("Menu size must be a multiple of 9 between 9 and 54.");
         }
         if (config.contains("items") && !config.isConfigurationSection("items")) {
-            throw new IllegalArgumentException("Menu items must be a configuration section.");
+            throw new IllegalArgumentException("Menu entries must be a configuration section.");
         }
         if (!config.isConfigurationSection("items")) return;
         for (String key : config.getConfigurationSection("items").getKeys(false)) {
             String path = "items." + key;
             if (!config.isConfigurationSection(path) || !config.isList(path + ".slots")) {
-                throw new IllegalArgumentException("Each menu item needs a list of integer slots.");
+                throw new IllegalArgumentException("Each configured entry requires a list of slot numbers.");
             }
             for (Object slot : config.getList(path + ".slots")) {
                 if (!(slot instanceof Integer slotIndex) || slotIndex < 0 || slotIndex >= size) {
-                    throw new IllegalArgumentException("Menu slots must be integers within the inventory size.");
+                    throw new IllegalArgumentException("Configured slot numbers must be non-negative integers within inventory capacity.");
                 }
             }
         }
     }
 
-    public List<GUIItem> getMainMenuItems(){
+    public List<GUIItem> getMainMenuItems() {
         return mainMenuItems;
     }
 
