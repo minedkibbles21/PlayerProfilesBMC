@@ -99,45 +99,45 @@ public interface ProfileTarget {
 
         @Override
         public ItemStack getHelmet() {
-            ItemStack item = player.getInventory().getHelmet();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getHelmet();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getChestplate() {
-            ItemStack item = player.getInventory().getChestplate();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getChestplate();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getLeggings() {
-            ItemStack item = player.getInventory().getLeggings();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getLeggings();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getBoots() {
-            ItemStack item = player.getInventory().getBoots();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getBoots();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getMainHand() {
-            ItemStack item = player.getInventory().getItemInMainHand();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getItemInMainHand();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getOffHand() {
-            ItemStack item = player.getInventory().getItemInOffHand();
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getItemInOffHand();
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override
         public ItemStack getItem(int slot) {
             if (slot < 0 || slot >= player.getInventory().getSize()) return new ItemStack(Material.AIR);
-            ItemStack item = player.getInventory().getItem(slot);
-            return item != null ? item.clone() : new ItemStack(Material.AIR);
+            ItemStack pieceStack = player.getInventory().getItem(slot);
+            return pieceStack != null ? pieceStack.clone() : new ItemStack(Material.AIR);
         }
 
         @Override

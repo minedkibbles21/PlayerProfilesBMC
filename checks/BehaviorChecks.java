@@ -67,7 +67,7 @@ public class BehaviorChecks {
             List<GUIItem> bundled = ItemsLoader.readItems(YamlConfiguration.loadConfiguration(
                     new File("core/src/main/resources", resource)));
             assert !bundled.isEmpty() : resource;
-            assert bundled.stream().allMatch(item -> !item.slots().isEmpty());
+            assert bundled.stream().allMatch(guiItem -> !guiItem.slots().isEmpty());
         }
         for (String version : List.of("1.21.5-R0.1-SNAPSHOT", "1.21.11-R0.1-SNAPSHOT", "26.0-R0.1-SNAPSHOT", "26.3-R0.1-SNAPSHOT", "26.3.1-R0.1", "26.3.build.979-stable")) {
             assert ItemManager.isVersionAtLeast(version, 1, 9, 0);
@@ -113,9 +113,9 @@ public class BehaviorChecks {
             out.writeByte(9); // TAG_List
             out.writeUTF("Inventory");
             out.writeByte(10); // elemType = TAG_Compound
-            out.writeInt(2);   // 2 items
+            out.writeInt(2);   // 2 entries
 
-            // Item 1: Helmet in slot 103
+            // Head slot (103)
             out.writeByte(1); // TAG_Byte (Slot)
             out.writeUTF("Slot");
             out.writeByte(103);
@@ -127,7 +127,7 @@ public class BehaviorChecks {
             out.writeInt(1);
             out.writeByte(0); // TAG_End
 
-            // Item 2: MainHand in slot 0
+            // MainHand in slot 0
             out.writeByte(1); // TAG_Byte (Slot)
             out.writeUTF("Slot");
             out.writeByte(0);

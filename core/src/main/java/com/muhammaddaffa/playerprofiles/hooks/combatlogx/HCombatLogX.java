@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 public class HCombatLogX {
 
     public static boolean isInCombat(Player player){
-        var plugin = Bukkit.getPluginManager().getPlugin("CombatLogX");
-        if (!(plugin instanceof ICombatLogX combatLogX) || !plugin.isEnabled()) return false;
+        org.bukkit.plugin.Plugin combatLogPlugin = Bukkit.getPluginManager().getPlugin("CombatLogX");
+        if (!(combatLogPlugin instanceof ICombatLogX combatLogX) || !combatLogPlugin.isEnabled()) return false;
         ICombatManager combatManager = combatLogX.getCombatManager();
         return combatManager != null && combatManager.isInCombat(player);
     }

@@ -76,13 +76,13 @@ public class OfflineEquipment {
     }
 
     public ItemStack getItem(int slot) {
-        ItemStack item = slots.get(slot);
-        return item != null ? item.clone() : air();
+        ItemStack storedStack = slots.get(slot);
+        return storedStack != null ? storedStack.clone() : air();
     }
 
-    public void setItem(int slot, ItemStack item) {
-        if (item != null) {
-            this.slots.put(slot, item);
+    public void setItem(int slot, ItemStack storedStack) {
+        if (storedStack != null) {
+            this.slots.put(slot, storedStack);
         }
     }
 

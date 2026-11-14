@@ -52,11 +52,11 @@ public class ProfileManager {
 
     public void loadProfileData(){
         loaded = false;
-        Config data = PlayerProfiles.DATA_DEFAULT;
-        if (data == null) return;
+        Config dataStore = PlayerProfiles.DATA_DEFAULT;
+        if (dataStore == null) return;
         YamlConfiguration config = new YamlConfiguration();
         try {
-            config.load(data.getFile());
+            config.load(dataStore.getFile());
             if (config.contains("data") && !config.isConfigurationSection("data")) {
                 throw new IllegalArgumentException("Invalid profile data section");
             }
@@ -67,7 +67,7 @@ public class ProfileManager {
                     restored.put(uuid, new Profile(uuid, config.getBoolean("data." + uuid), this::saveProfileData));
                 }
             }
-            data.getConfig().loadFromString(config.saveToString());
+            dataStore.getConfig().loadFromString(config.saveToString());
             profileMap.clear();
             profileMap.putAll(restored);
             loaded = true;
@@ -78,19 +78,19 @@ public class ProfileManager {
     }
 
     public void saveProfileData() {
-        Config data = PlayerProfiles.DATA_DEFAULT;
-        if (!loaded || data == null) return;
-        FileConfiguration config = data.getConfig();
+        Config dataStore = PlayerProfiles.DATA_DEFAULT;
+        if (!loaded || dataStore == null) return;
+        FileConfiguration config = dataStore.getConfig();
         Map<String, Object> previous = config.isConfigurationSection("data")
                 ? new HashMap<>(config.getConfigurationSection("data").getValues(false)) : null;
         for (Profile profile : profileMap.values()) {
             config.set("data." + profile.getUUID(), profile.isLocked());
         }
-        Path file = data.getFile().toPath();
+        Path file = dataStore.getFile().toPath();
         Path temporary = null;
         try {
             // A complete replacement prevents a crash from leaving partially written YAML.
-            temporary = Files.createTempFile(file.toAbsolutePath().getParent(), ".profiles-", ".tmp");
+            temporary = Files.createTempFile(file.toAbsolutePath().getParent(), ".profiles-", ".part");
             Files.writeString(temporary, config.saveToString(), StandardCharsets.UTF_8);
             try {
                 Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);

@@ -68,11 +68,11 @@ public class ProfileInventory extends FastInv {
         if (player != null && player.isOnline()) player.closeInventory();
     }
 
-    private boolean visible(GUIItem item, Player player, ProfileTarget target) {
+    private boolean visible(GUIItem guiEntry, Player player, ProfileTarget target) {
         boolean isOwner = player.getUniqueId().equals(target.getUniqueId());
-        return (!item.usePermission() || player.hasPermission(item.permission())) &&
-                (!item.onlyVisitor() || !isOwner) &&
-                (!item.onlyOwner() || isOwner);
+        return (!guiEntry.usePermission() || player.hasPermission(guiEntry.permission())) &&
+                (!guiEntry.onlyVisitor() || !isOwner) &&
+                (!guiEntry.onlyOwner() || isOwner);
     }
 
     private void setAllItems(List<GUIItem> items, Player player, ProfileTarget target) {
@@ -80,10 +80,10 @@ public class ProfileInventory extends FastInv {
         clearItems();
         List<GUIItem> sorted = new ArrayList<>(items);
         sorted.sort(Comparator.comparingInt(GUIItem::priority));
-        for (GUIItem item : sorted) {
-            if (!visible(item, player, target)) continue;
-            ItemStack stack = ItemManager.createGUIItem(item, player, target);
-            List<Integer> slots = item.slots().stream()
+        for (GUIItem guiEntry : sorted) {
+            if (!visible(guiEntry, player, target)) continue;
+            ItemStack stack = ItemManager.createGUIItem(guiEntry, player, target);
+            List<Integer> slots = guiEntry.slots().stream()
                     .filter(slot -> slot != null && slot >= 0 && slot < getInventory().getSize()).toList();
             setItems(slots, stack, event -> {
                 event.setCancelled(true);
@@ -93,11 +93,11 @@ public class ProfileInventory extends FastInv {
                     return;
                 }
                 // Recheck immediately; permission revocation need not wait for refresh.
-                if (!visible(item, player, target)) {
+                if (!visible(guiEntry, player, target)) {
                     setAllItems(items, player, target);
                     return;
                 }
-                ClickManager.handleInventoryClick(item, player, target, event, forced);
+                ClickManager.handleInventoryClick(guiEntry, player, target, event, forced);
             });
         }
         ItemManager.fillItem(this, config);

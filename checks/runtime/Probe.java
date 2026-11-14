@@ -91,7 +91,7 @@ public class Probe extends JavaPlugin {
         // Suppress periodic tasks for these synthetic viewers; the real server still renders every item.
         ConfigValue.AUTO_REFRESH_ENABLED = false;
         ConfigValue.DISTANCE_CHECK_ENABLED = false;
-        var mainItems = ItemsLoader.readItems(PlayerProfiles.GUI_DEFAULT.getConfig());
+        List<GUIItem> mainItems = ItemsLoader.readItems(PlayerProfiles.GUI_DEFAULT.getConfig());
         ProfileInventory ownerMenu = new ProfileInventory(mainItems, player, player, 54, "Owner {target}");
         check(ownerMenu.getInventory().getSize() == 54, "owner menu renders on Paper 26.3");
         check(ownerMenu.getInventory().getItem(51) != null, "owner lock action is displayed");
@@ -162,14 +162,14 @@ public class Probe extends JavaPlugin {
         }
     }
 
-    private GUIItem item(String type, String material) {
+    private GUIItem createTestItem(String type, String material) {
         return new GUIItem(type, material, 1, "Test", List.of(0), false, false, false, "",
                 List.of(), List.of(), List.of(), 0, "", false, false, 1);
     }
 
     @SuppressWarnings("unchecked")
     private Map<Integer, Consumer<InventoryClickEvent>> handlers(ProfileInventory menu) throws Exception {
-        var field = menu.getClass().getSuperclass().getDeclaredField("itemHandlers");
+        java.lang.reflect.Field field = menu.getClass().getSuperclass().getDeclaredField("itemHandlers");
         field.setAccessible(true);
         return (Map<Integer, Consumer<InventoryClickEvent>>) field.get(menu);
     }
@@ -192,7 +192,7 @@ public class Probe extends JavaPlugin {
         ConfigValue.AUTO_REFRESH_ENABLED = false;
         ConfigValue.DISTANCE_CHECK_ENABLED = false;
         ConfigValue.DISABLED_WORLDS = List.of();
-        var manager = plugin.getInventoryManager();
+        com.muhammaddaffa.playerprofiles.manager.inventory.InventoryManager manager = plugin.getInventoryManager();
         plugin.getProfileManager().unlockProfile(target);
         check(manager.canView(player, target), "normal permitted profile is accessible");
         viewer.denied.add("playerprofiles.profile.others");
@@ -234,18 +234,18 @@ public class Probe extends JavaPlugin {
         other.online = true;
 
         for (String spec : List.of("SLOT;", "SLOT;no", "SLOT;-1", "SLOT;41", "SLOTS;999999999999", "HEAD;", "UNKNOWN;x")) {
-            check(ItemManager.createGUIItem(item(null, spec), player, target).getType() == Material.BARRIER,
+            check(ItemManager.createGUIItem(createTestItem(null, spec), player, target).getType() == Material.BARRIER,
                     "malformed material returns error item: " + spec);
-            check(ItemManager.createGUIItem(item(spec, "STONE"), player, target).getType() == Material.BARRIER,
+            check(ItemManager.createGUIItem(createTestItem(spec, "STONE"), player, target).getType() == Material.BARRIER,
                     "malformed type returns error item: " + spec);
         }
-        check(ItemManager.createGUIItem(item(null, ""), player, target).getType() == Material.BARRIER,
+        check(ItemManager.createGUIItem(createTestItem(null, ""), player, target).getType() == Material.BARRIER,
                 "blank materials return an error item");
-        check(ItemManager.createGUIItem(item(null, "AIR"), player, target).getType().isAir(),
+        check(ItemManager.createGUIItem(createTestItem(null, "AIR"), player, target).getType().isAir(),
                 "AIR items render without requesting item metadata");
-        check(ItemManager.createGUIItem(item(null, "HEAD;not-a-valid-texture!"), player, target).getType() == Material.PLAYER_HEAD,
+        check(ItemManager.createGUIItem(createTestItem(null, "HEAD;not-a-valid-texture!"), player, target).getType() == Material.PLAYER_HEAD,
                 "invalid head texture falls back to a valid player head");
-        ItemStack copy = ItemManager.createGUIItem(item("SLOTS;0", "STONE"), player, target);
+        ItemStack copy = ItemManager.createGUIItem(createTestItem("SLOTS;0", "STONE"), player, target);
         check(copy.equals(other.held) && copy != other.held, "inventory previews clone original items");
         YamlConfiguration config = new YamlConfiguration();
         config.loadFromString("size: 9\nfillItems: {enabled: true, material: DIAMOND, name: Test}");
@@ -269,19 +269,19 @@ public class Probe extends JavaPlugin {
                 "revocation clears both stale item and click handler immediately");
         check(viewer.messages.stream().noneMatch(m -> m.contains("action-fired")), "revoked click never executes its command");
         viewer.denied.clear();
-        var distance = ProfileInventory.class.getDeclaredMethod("checkDistance", Player.class, Player.class);
+        java.lang.reflect.Method distance = ProfileInventory.class.getDeclaredMethod("checkDistance", Player.class, Player.class);
         distance.setAccessible(true);
         int closed = viewer.closed;
         distance.invoke(menu, player, null);
         other.online = false; distance.invoke(menu, player, target); other.online = true;
         check(viewer.closed == closed + 2, "null and disconnected targets close safely without dereferencing null");
 
-        var listenerField = PlayerProfiles.class.getDeclaredField("playerInteract");
+        java.lang.reflect.Field listenerField = PlayerProfiles.class.getDeclaredField("playerInteract");
         listenerField.setAccessible(true);
         PlayerInteract listener = (PlayerInteract) listenerField.get(plugin);
         ConfigValue.MUST_SHIFT_CLICK = false; ConfigValue.COOLDOWN_ENABLED = true; ConfigValue.COOLDOWN_TIME = 60;
         listener.onPlayerRightClickEntity(new PlayerInteractAtEntityEvent(player, target, new org.bukkit.util.Vector(), org.bukkit.inventory.EquipmentSlot.HAND));
-        var cooldowns = PlayerInteract.class.getDeclaredField("mapCooldown"); cooldowns.setAccessible(true);
+        java.lang.reflect.Field cooldowns = PlayerInteract.class.getDeclaredField("mapCooldown"); cooldowns.setAccessible(true);
         check(((Map<?, ?>) cooldowns.get(listener)).containsKey(player.getUniqueId()), "cooldown keys are UUIDs");
         listener.onQuit(new PlayerQuitEvent(player, ""));
         check(((Map<?, ?>) cooldowns.get(listener)).isEmpty(), "quit removes cooldown state");
@@ -321,7 +321,7 @@ public class Probe extends JavaPlugin {
         check(menus.getByName("ignored.txt") == null && menus.getByName("folder.yml") == null && menus.getByName("invalid.yml") == null,
                 "non-YAML files, directories and malformed YAML are skipped");
         Files.delete(text); Files.delete(folder); Files.delete(bad);
-        var creatorConfig = PlayerProfiles.GUI_CREATOR.getConfig(); String original = creatorConfig.saveToString();
+        org.bukkit.configuration.file.FileConfiguration creatorConfig = PlayerProfiles.GUI_CREATOR.getConfig(); String original = creatorConfig.saveToString();
         try {
             creatorConfig.set("menu", null); new com.muhammaddaffa.playerprofiles.manager.customgui.CustomGuiCreator(plugin).createCustomGui();
             creatorConfig.set("menu.bad.fileName", "../escaped-check.yml");
@@ -335,21 +335,21 @@ public class Probe extends JavaPlugin {
     }
 
     private void persistence(PlayerProfiles plugin, Player player) throws Exception {
-        var manager = plugin.getProfileManager();
+        ProfileManager manager = plugin.getProfileManager();
         manager.lockProfile(player);
-        Path data = PlayerProfiles.DATA_DEFAULT.getFile().toPath();
-        String original = Files.readString(data);
-        Files.writeString(data, "data: [broken");
+        Path dataFilePath = PlayerProfiles.DATA_DEFAULT.getFile().toPath();
+        String original = Files.readString(dataFilePath);
+        Files.writeString(dataFilePath, "data: [broken");
         try {
             ProfileManager fresh = new ProfileManager(); boolean rejected = false;
             try { fresh.loadProfileData(); } catch (IllegalStateException expected) { rejected = true; }
             fresh.saveProfileData();
-            check(rejected && Files.readString(data).equals("data: [broken"), "corrupt profile data is rejected and never overwritten");
+            check(rejected && Files.readString(dataFilePath).equals("data: [broken"), "corrupt profile data is rejected and never overwritten");
             try { manager.loadProfileData(); } catch (IllegalStateException expected) { }
             manager.saveProfileData();
-            check(Files.readString(data).equals("data: [broken"), "failed reload also prevents a previously loaded manager from overwriting corrupt data");
-        } finally { Files.writeString(data, original); manager.loadProfileData(); }
-        Path saved = data.resolveSibling("data-check-backup.yml"); Files.move(data, saved); Files.createDirectory(data);
+            check(Files.readString(dataFilePath).equals("data: [broken"), "failed reload also prevents a previously loaded manager from overwriting corrupt data");
+        } finally { Files.writeString(dataFilePath, original); manager.loadProfileData(); }
+        Path saved = dataFilePath.resolveSibling("data-check-backup.yml"); Files.move(dataFilePath, saved); Files.createDirectory(dataFilePath);
         try {
             boolean rejected = false;
             try { manager.unlockProfile(player); } catch (IllegalStateException expected) { rejected = true; }
@@ -358,7 +358,7 @@ public class Probe extends JavaPlugin {
             check(Files.readString(saved).equals(original), "failed save preserves the previous file");
             check(PlayerProfiles.DATA_DEFAULT.getConfig().getBoolean("data." + player.getUniqueId()),
                     "failed save restores a navigable configuration section");
-        } finally { Files.delete(data); Files.move(saved, data); }
+        } finally { Files.delete(dataFilePath); Files.move(saved, dataFilePath); }
     }
 
     private Object defaultValue(Class<?> type) {

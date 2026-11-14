@@ -88,7 +88,7 @@ public class ItemsLoader {
                 throw new IllegalArgumentException("Each menu item needs a list of integer slots.");
             }
             for (Object slot : config.getList(path + ".slots")) {
-                if (!(slot instanceof Integer value) || value < 0 || value >= size) {
+                if (!(slot instanceof Integer slotIndex) || slotIndex < 0 || slotIndex >= size) {
                     throw new IllegalArgumentException("Menu slots must be integers within the inventory size.");
                 }
             }
