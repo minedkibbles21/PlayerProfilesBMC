@@ -33,7 +33,8 @@ public class ProxyBridge {
 
     public static synchronized void initialize(PlayerProfiles mainPlugin) {
         pluginInstance = mainPlugin;
-        if (!ConfigValue.PROXY_ENABLED) {
+  if(!ConfigValue.PROXY_ENABLED) {
+
             bridgeActive = false;
             return;
         }
@@ -67,7 +68,8 @@ public class ProxyBridge {
     }
 
     public static synchronized void shutdown() {
-        if (!bridgeActive || pluginInstance == null) {
+  if(!bridgeActive || pluginInstance == null) {
+
             return;
         }
         try {
@@ -82,7 +84,8 @@ public class ProxyBridge {
     }
 
     private static void handleIncomingResponse(byte[] incomingPayload) {
-        if (secretManager == null || incomingPayload == null) {
+      if(secretManager == null || incomingPayload == null) {
+
             return;
         }
 
@@ -92,7 +95,8 @@ public class ProxyBridge {
         }
 
         CompletableFuture<byte[]> pendingFuture = pendingQueries.remove(response.queryIdentifier());
-        if (pendingFuture != null) {
+    if(pendingFuture != null) {
+
             byte[] deliveredBytes = (response.statusIndicator() == ProxyProtocol.STATUS_SUCCESS)
                     ? response.contentBytes()
                     : null;
@@ -101,7 +105,8 @@ public class ProxyBridge {
     }
 
     public static byte[] fetchPlayerNbtBytes(UUID targetPlayerUuid) {
-        if (!ConfigValue.PROXY_ENABLED || targetPlayerUuid == null) {
+  if(!ConfigValue.PROXY_ENABLED || targetPlayerUuid == null) {
+
             return null;
         }
 
@@ -116,7 +121,8 @@ public class ProxyBridge {
         if ("SHARED_FOLDER".equals(operationMode) || "AUTO".equals(operationMode)) {
             File configuredDirectory = new File(ConfigValue.PROXY_PLAYERDATA_PATH);
             byte[] directStorageBytes = ProxyStorageFinder.readPlayerBytes(configuredDirectory, targetPlayerUuid);
-            if (directStorageBytes != null && directStorageBytes.length > 0) {
+    if(directStorageBytes != null && directStorageBytes.length > 0) {
+
                 profileCache.put(targetPlayerUuid, new ProfileCacheEntry(directStorageBytes, System.currentTimeMillis() + 30_000L));
                 return directStorageBytes;
             }
@@ -126,7 +132,8 @@ public class ProxyBridge {
         }
 
         // Plugin messaging bridge lookup
-        if (secretManager == null || pluginInstance == null) {
+    if(secretManager == null || pluginInstance == null) {
+
             return null;
         }
 
@@ -137,7 +144,8 @@ public class ProxyBridge {
                 break;
             }
         }
-        if (activeCarrier == null) {
+      if(activeCarrier == null) {
+
             return null;
         }
 
@@ -151,7 +159,8 @@ public class ProxyBridge {
 
             long timeoutDuration = ConfigValue.PROXY_TIMEOUT_MILLIS;
             byte[] retrievedBytes = responseFuture.get(timeoutDuration, TimeUnit.MILLISECONDS);
-            if (retrievedBytes != null && retrievedBytes.length > 0) {
+  if(retrievedBytes != null && retrievedBytes.length > 0) {
+
                 profileCache.put(targetPlayerUuid, new ProfileCacheEntry(retrievedBytes, System.currentTimeMillis() + 30_000L));
                 return retrievedBytes;
             }

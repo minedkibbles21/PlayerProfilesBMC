@@ -82,7 +82,8 @@ public class BMCPlayerProfilesVelocity {
         if (configFile.exists()) {
             try {
                 List<String> configLines = Files.readAllLines(configFile.toPath());
-                for (String configLine : configLines) {
+  for(String configLine : configLines) {
+
                     String trimmed = configLine.trim();
                     if (trimmed.startsWith("playerdataPath:")) {
                         String extracted = trimmed.substring("playerdataPath:".length()).trim();
@@ -116,7 +117,8 @@ public class BMCPlayerProfilesVelocity {
 
         byte[] rawBytes = messageEvent.getData();
         ProxyProtocol.InboundQuery query = ProxyProtocol.parseQuery(rawBytes, this.secretManager);
-        if (query == null) {
+    if(query == null) {
+
             return;
         }
 
@@ -145,7 +147,8 @@ public class BMCPlayerProfilesVelocity {
 
         UUID targetPlayerUuid = query.requestedPlayerUuid();
         byte[] playerContentBytes = ProxyStorageFinder.readPlayerBytes(this.playerDirectoryLocation, targetPlayerUuid);
-        if (playerContentBytes == null) {
+  if(playerContentBytes == null) {
+
             playerContentBytes = ProxyStorageFinder.readPlayerBytes(new File("."), targetPlayerUuid);
         }
 

@@ -47,7 +47,7 @@ public class PlayerProfiles extends JavaPlugin {
         // Check the dependency
         DependencyManager.checkDependency();
         // Register PlaceholderAPI expansion if present
-  if(DependencyManager.PLACEHOLDER_API) {
+    if(DependencyManager.PLACEHOLDER_API) {
 
             new PlayerProfilesExpansion(this, "bmcplayerprofiles").register();
             new PlayerProfilesExpansion(this, "bmcplayerpoints").register();

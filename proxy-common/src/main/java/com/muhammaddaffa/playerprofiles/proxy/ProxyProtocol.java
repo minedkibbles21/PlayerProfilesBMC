@@ -44,14 +44,16 @@ public class ProxyProtocol {
     }
 
     public static InboundQuery parseQuery(byte[] rawPacketBytes, SecretManager secretHolder) {
-        if (rawPacketBytes == null || rawPacketBytes.length < 58) {
+      if(rawPacketBytes == null || rawPacketBytes.length < 58) {
+
             return null;
         }
 
         try (DataInputStream streamReader = new DataInputStream(new ByteArrayInputStream(rawPacketBytes))) {
             byte readMagic = streamReader.readByte();
             byte readAction = streamReader.readByte();
-            if (readMagic != PACKET_MAGIC || readAction != ACTION_FETCH_PROFILE) {
+      if(readMagic != PACKET_MAGIC || readAction != ACTION_FETCH_PROFILE) {
+
                 return null;
             }
 
@@ -90,7 +92,8 @@ public class ProxyProtocol {
 
         int payloadSize = (contentBytes != null) ? contentBytes.length : 0;
         streamWriter.writeInt(payloadSize);
-        if (contentBytes != null && payloadSize > 0) {
+    if(contentBytes != null && payloadSize > 0) {
+
             streamWriter.write(contentBytes);
         }
         streamWriter.flush();
@@ -104,14 +107,16 @@ public class ProxyProtocol {
     }
 
     public static InboundResponse parseResponse(byte[] rawPacketBytes, SecretManager secretHolder) {
-        if (rawPacketBytes == null || rawPacketBytes.length < 35) {
+    if(rawPacketBytes == null || rawPacketBytes.length < 35) {
+
             return null;
         }
 
         try (DataInputStream streamReader = new DataInputStream(new ByteArrayInputStream(rawPacketBytes))) {
             byte readMagic = streamReader.readByte();
             byte readAction = streamReader.readByte();
-            if (readMagic != PACKET_MAGIC || readAction != ACTION_DELIVER_PROFILE) {
+    if(readMagic != PACKET_MAGIC || readAction != ACTION_DELIVER_PROFILE) {
+
                 return null;
             }
 
@@ -121,7 +126,8 @@ public class ProxyProtocol {
             int declaredLength = streamReader.readInt();
 
             byte[] contentBytes = null;
-            if (declaredLength > 0) {
+      if(declaredLength > 0) {
+
                 contentBytes = new byte[declaredLength];
                 streamReader.readFully(contentBytes);
             }

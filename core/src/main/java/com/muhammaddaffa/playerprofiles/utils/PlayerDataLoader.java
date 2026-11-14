@@ -44,10 +44,11 @@ public class PlayerDataLoader {
 
         UUID uuid = offlinePlayer.getUniqueId();
         boolean isBedrock = FloodgateHook.isBedrockPlayer(uuid);
+    if(com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_ENABLED) {
 
-        if (com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_ENABLED) {
             byte[] proxyBytes = com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.fetchPlayerNbtBytes(uuid);
-            if (proxyBytes != null && proxyBytes.length > 0) {
+      if(proxyBytes != null && proxyBytes.length > 0) {
+
                 try {
                     NBTCompound proxyRoot = NBTReader.readStream(new java.io.ByteArrayInputStream(proxyBytes));
                     OfflineEquipment proxyEquipment = parseEquipment(proxyRoot);
@@ -56,7 +57,8 @@ public class PlayerDataLoader {
                     // Fallback to local if parsing fails
                 }
             }
-            if (!com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_FALLBACK_LOCAL) {
+      if(!com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_FALLBACK_LOCAL) {
+
                 return ProfileTarget.of(offlinePlayer, new OfflineEquipment(), isBedrock);
             }
         }
@@ -109,7 +111,8 @@ public class PlayerDataLoader {
 
             // Query Floodgate UUID resolver
             UUID floodgateUuid = FloodgateHook.getUuidFor(query);
-            if (floodgateUuid != null) {
+  if(floodgateUuid != null) {
+
                 OfflinePlayer floodgatePlayer = Bukkit.getOfflinePlayer(floodgateUuid);
                 if (floodgatePlayer != null) return floodgatePlayer;
             }
@@ -149,7 +152,8 @@ public class PlayerDataLoader {
         if (Bukkit.getServer() != null) {
             for (World world : Bukkit.getWorlds()) {
                 File worldFolder = world.getWorldFolder();
-                for (String sub : subPaths) {
+    for(String sub : subPaths) {
+
                     File candidate = new File(new File(worldFolder, sub), fileName);
                     if (candidate.exists() && candidate.isFile()) {
                         return candidate;
@@ -163,15 +167,16 @@ public class PlayerDataLoader {
         if (container != null && container.exists()) {
             File defaultWorld = new File(container, "world");
             if (defaultWorld.exists() && defaultWorld.isDirectory()) {
-                for (String sub : subPaths) {
+      for(String sub : subPaths) {
+
                     File candidate = new File(new File(defaultWorld, sub), fileName);
                     if (candidate.exists() && candidate.isFile()) {
                         return candidate;
                     }
                 }
             }
+  for(String sub : subPaths) {
 
-            for (String sub : subPaths) {
                 File candidate = new File(new File(container, sub), fileName);
                 if (candidate.exists() && candidate.isFile()) {
                     return candidate;
@@ -179,9 +184,12 @@ public class PlayerDataLoader {
             }
 
             File[] folders = container.listFiles(File::isDirectory);
-            if (folders != null) {
-                for (File folder : folders) {
-                    for (String sub : subPaths) {
+      if(folders != null) {
+
+    for(File folder : folders) {
+
+      for(String sub : subPaths) {
+
                         File candidate = new File(new File(folder, sub), fileName);
                         if (candidate.exists() && candidate.isFile()) {
                             return candidate;
@@ -195,14 +203,16 @@ public class PlayerDataLoader {
         File currentDir = new File(".");
         File localWorld = new File(currentDir, "world");
         if (localWorld.exists() && localWorld.isDirectory()) {
-            for (String sub : subPaths) {
+  for(String sub : subPaths) {
+
                 File candidate = new File(new File(localWorld, sub), fileName);
                 if (candidate.exists() && candidate.isFile()) {
                     return candidate;
                 }
             }
         }
-        for (String sub : subPaths) {
+    for(String sub : subPaths) {
+
             File candidate = new File(new File(currentDir, sub), fileName);
             if (candidate.exists() && candidate.isFile()) {
                 return candidate;
@@ -229,7 +239,8 @@ public class PlayerDataLoader {
 
         // 1. Parse standard Inventory list (for inventory slots, hotbar, and legacy armor)
         List<Object> inventory = playerCompound.getList("Inventory");
-        for (Object elem : inventory) {
+      for(Object elem : inventory) {
+
             if (!(elem instanceof NBTCompound itemTag)) continue;
 
             int slot = itemTag.getInt("Slot");
@@ -240,7 +251,8 @@ public class PlayerDataLoader {
             equipment.setItem(slot, stack);
 
             // Legacy Minecraft armor & hand slots in Inventory
-            if (slot == 103) {
+      if(slot == 103) {
+
                 equipment.setHelmet(stack);
             } else if (slot == 102) {
                 equipment.setChestplate(stack);
@@ -257,10 +269,12 @@ public class PlayerDataLoader {
 
         // 2. Modern 26.x / 1.21.5+ "equipment" compound tag
         NBTCompound equipCompound = playerCompound.getCompound("equipment");
-        if (equipCompound == null) {
+  if(equipCompound == null) {
+
             equipCompound = playerCompound.getCompound("Equipment");
         }
-        if (equipCompound != null) {
+      if(equipCompound != null) {
+
             parseEquipmentCompound(equipCompound, equipment, selectedSlot);
         }
 
@@ -270,8 +284,10 @@ public class PlayerDataLoader {
             equipList = playerCompound.getList("Equipment");
         }
         if (!equipList.isEmpty()) {
-            for (Object equipElement : equipList) {
-                if (equipElement instanceof NBTCompound comp) {
+  for(Object equipElement : equipList) {
+
+  if(equipElement instanceof NBTCompound comp) {
+
                     parseEquipmentEntry(comp, equipment, selectedSlot);
                 }
             }
@@ -415,7 +431,8 @@ public class PlayerDataLoader {
 
     private static NBTCompound getChildCompound(NBTCompound parent, String... possibleKeys) {
         if (parent == null) return null;
-        for (String key : possibleKeys) {
+    for(String key : possibleKeys) {
+
             NBTCompound child = parent.getCompound(key);
             if (child != null && !child.isEmpty()) {
                 return child;
@@ -453,7 +470,8 @@ public class PlayerDataLoader {
 
         // Modern 1.20.5+ / 26.3 components
         NBTCompound components = tag.getCompound("components");
-        if (components != null) {
+  if(components != null) {
+
             if (components.has("minecraft:custom_name")) {
                 meta.setDisplayName(Utils.color(cleanJsonText(components.getString("minecraft:custom_name"))));
             } else if (components.has("minecraft:item_name")) {
@@ -462,7 +480,8 @@ public class PlayerDataLoader {
             if (components.has("minecraft:lore")) {
                 List<Object> loreList = components.getList("minecraft:lore");
                 List<String> lore = new ArrayList<>();
-                for (Object line : loreList) {
+      for(Object line : loreList) {
+
                     if (line instanceof String s) lore.add(Utils.color(cleanJsonText(s)));
                 }
                 meta.setLore(lore);
@@ -488,22 +507,26 @@ public class PlayerDataLoader {
             if (components.has("minecraft:dyed_color") && meta instanceof org.bukkit.inventory.meta.LeatherArmorMeta leatherMeta) {
                 Object colorVal = components.get("minecraft:dyed_color");
                 int rgb = 0;
-                if (colorVal instanceof Number num) {
+    if(colorVal instanceof Number num) {
+
                     rgb = num.intValue();
                 } else if (colorVal instanceof NBTCompound colorComp && colorComp.has("rgb")) {
                     rgb = colorComp.getInt("rgb");
                 }
-                if (rgb != 0) {
+  if(rgb != 0) {
+
                     leatherMeta.setColor(org.bukkit.Color.fromRGB(rgb & 0xFFFFFF));
                 }
             }
             NBTCompound enchants = components.getCompound("minecraft:enchantments");
-            if (enchants != null) {
+    if(enchants != null) {
+
                 NBTCompound levels = enchants.getCompound("levels");
                 NBTCompound target = levels != null ? levels : enchants;
                 for (String enchKey : target.keySet()) {
                     Enchantment ench = parseEnchantment(enchKey);
-                    if (ench != null) {
+      if(ench != null) {
+
                         meta.addEnchant(ench, target.getInt(enchKey), true);
                     }
                 }
@@ -512,16 +535,19 @@ public class PlayerDataLoader {
 
         // Legacy 1.20.4 and older 'tag'
         NBTCompound legacyTag = tag.getCompound("tag");
-        if (legacyTag != null) {
+  if(legacyTag != null) {
+
             NBTCompound display = legacyTag.getCompound("display");
-            if (display != null) {
+  if(display != null) {
+
                 if (display.has("Name")) {
                     meta.setDisplayName(Utils.color(cleanJsonText(display.getString("Name"))));
                 }
                 if (display.has("Lore")) {
                     List<Object> loreList = display.getList("Lore");
                     List<String> lore = new ArrayList<>();
-                    for (Object line : loreList) {
+    for(Object line : loreList) {
+
                         if (line instanceof String s) lore.add(Utils.color(cleanJsonText(s)));
                     }
                     meta.setLore(lore);
@@ -535,12 +561,15 @@ public class PlayerDataLoader {
             }
             List<Object> enchants = legacyTag.getList("Enchantments");
             if (enchants.isEmpty()) enchants = legacyTag.getList("ench");
-            for (Object enchElem : enchants) {
-                if (enchElem instanceof NBTCompound enchTag) {
+    for(Object enchElem : enchants) {
+
+      if(enchElem instanceof NBTCompound enchTag) {
+
                     String enchId = enchTag.getString("id");
                     int lvl = enchTag.getInt("lvl");
                     Enchantment ench = parseEnchantment(enchId);
-                    if (ench != null) {
+      if(ench != null) {
+
                         meta.addEnchant(ench, lvl, true);
                     }
                 }
@@ -555,7 +584,8 @@ public class PlayerDataLoader {
         if (enchIdentifier == null || enchIdentifier.isBlank()) return null;
         try {
             NamespacedKey nsKey = NamespacedKey.fromString(enchIdentifier.toLowerCase(Locale.ROOT));
-            if (nsKey != null) {
+      if(nsKey != null) {
+
                 try {
                     Enchantment registryEnch = org.bukkit.Registry.ENCHANTMENT.get(nsKey);
                     if (registryEnch != null) return registryEnch;

@@ -45,7 +45,8 @@ public class BMCPlayerProfilesBungee extends Plugin implements Listener {
         File configFile = new File(pluginDirectory, "config.yml");
         if (!configFile.exists()) {
             try (InputStream defaultStream = getResourceAsStream("config.yml")) {
-                if (defaultStream != null) {
+      if(defaultStream != null) {
+
                     Files.copy(defaultStream, configFile.toPath());
                 } else {
                     Configuration defaultConfig = new Configuration();
@@ -88,7 +89,8 @@ public class BMCPlayerProfilesBungee extends Plugin implements Listener {
 
         byte[] rawBytes = messageEvent.getData();
         ProxyProtocol.InboundQuery query = ProxyProtocol.parseQuery(rawBytes, this.secretManager);
-        if (query == null) {
+    if(query == null) {
+
             return;
         }
 
@@ -114,7 +116,8 @@ public class BMCPlayerProfilesBungee extends Plugin implements Listener {
 
         UUID targetPlayerUuid = query.requestedPlayerUuid();
         byte[] playerContentBytes = ProxyStorageFinder.readPlayerBytes(this.playerDirectoryLocation, targetPlayerUuid);
-        if (playerContentBytes == null) {
+    if(playerContentBytes == null) {
+
             playerContentBytes = ProxyStorageFinder.readPlayerBytes(new File("."), targetPlayerUuid);
         }
 

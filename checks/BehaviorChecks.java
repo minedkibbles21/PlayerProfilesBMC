@@ -268,6 +268,7 @@ public class BehaviorChecks {
         assert pluginDesc.contains("commands.bmcplayerprofilereload");
         assert pluginDesc.contains("commands.vprofile");
 
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, and bmcplayerprofile commands.");
         // Verify proxy config options
         assert !configDesc.getBoolean("proxy.enabled");
         assert "AUTO".equalsIgnoreCase(configDesc.getString("proxy.mode"));
