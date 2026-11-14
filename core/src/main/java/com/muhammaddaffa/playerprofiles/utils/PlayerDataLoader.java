@@ -45,6 +45,22 @@ public class PlayerDataLoader {
         UUID uuid = offlinePlayer.getUniqueId();
         boolean isBedrock = FloodgateHook.isBedrockPlayer(uuid);
 
+        if (com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_ENABLED) {
+            byte[] proxyBytes = com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.fetchPlayerNbtBytes(uuid);
+            if (proxyBytes != null && proxyBytes.length > 0) {
+                try {
+                    NBTCompound proxyRoot = NBTReader.readStream(new java.io.ByteArrayInputStream(proxyBytes));
+                    OfflineEquipment proxyEquipment = parseEquipment(proxyRoot);
+                    return ProfileTarget.of(offlinePlayer, proxyEquipment, isBedrock);
+                } catch (Exception proxyParseException) {
+                    // Fallback to local if parsing fails
+                }
+            }
+            if (!com.muhammaddaffa.playerprofiles.ConfigValue.PROXY_FALLBACK_LOCAL) {
+                return ProfileTarget.of(offlinePlayer, new OfflineEquipment(), isBedrock);
+            }
+        }
+
         File dataFile = getPlayerDataFile(uuid);
         if (dataFile == null || !dataFile.exists()) {
             // If the player has never joined and no data file exists, return null

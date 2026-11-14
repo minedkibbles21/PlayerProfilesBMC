@@ -68,6 +68,8 @@ public class PlayerProfiles extends JavaPlugin {
         // Register the player interact and combat events
         Bukkit.getPluginManager().registerEvents(playerInteract, this);
         Bukkit.getPluginManager().registerEvents(combatManager, this);
+        // Initialize proxy bridge if enabled
+        com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.initialize(this);
         // Register all commands
         registerCommands();
         com.muhammaddaffa.mdlib.utils.Logger.info("&6[BMCPlayerProfiles] &eBendersMC Private Build - Authorized for BMC Devs only.");
@@ -79,6 +81,7 @@ public class PlayerProfiles extends JavaPlugin {
             inventoryManager.closeInventories();
             profileManager.saveProfileData();
             CombatManager.clearAll();
+            com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.shutdown();
         } finally {
             MDLib.shutdown();
             instance = null;
@@ -105,6 +108,8 @@ public class PlayerProfiles extends JavaPlugin {
         ConfigValue.initialize();
         if (!ConfigValue.COOLDOWN_ENABLED) playerInteract.clearCooldowns();
         CombatManager.clearAll();
+        com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.shutdown();
+        com.muhammaddaffa.playerprofiles.proxy.ProxyBridge.initialize(this);
         // Reload all items for the profile inventory
         inventoryManager.reInitialize();
         // Reload all custom gui creator

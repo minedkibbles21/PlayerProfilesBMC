@@ -1,0 +1,5 @@
+name: BMCPlayerProfiles
+version: ${project.version}
+main: com.muhammaddaffa.playerprofiles.proxy.bungee.BMCPlayerProfilesBungee
+author: MinedKibbles21
+description: BungeeCord proxy companion for BMCPlayerProfiles to serve player.dat across the network.

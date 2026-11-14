@@ -21,12 +21,15 @@
     </properties>
 
     <modules>
-        <module>dist</module>
-        <module>core</module>
         <module>api</module>
+        <module>proxy-common</module>
         <module>worldguard-wrapper</module>
         <module>worldguard6</module>
         <module>worldguard7</module>
+        <module>core</module>
+        <module>bungee</module>
+        <module>velocity</module>
+        <module>dist</module>
     </modules>
 
     <build>

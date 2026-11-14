@@ -32,6 +32,27 @@ zmenu:
   enabled: false
   profileMenu: "profile"
 
+# Proxy Integration (BungeeCord & Velocity)
+# When enabled, BMCPlayerProfiles links to your BungeeCord or Velocity proxy
+# and reads the proxy's player.dat instead of the local server's player.dat.
+# Linking uses a secret.pem file generated automatically in plugins/BMCPlayerProfiles/.
+proxy:
+  # Whether proxy player data mode is enabled (default: false)
+  enabled: false
+  # Mode: AUTO, PLUGIN_MESSAGING, or SHARED_FOLDER
+  # - AUTO: Queries the proxy via plugin messaging if players are online, with shared-folder fallback
+  # - PLUGIN_MESSAGING: Communicates directly with BMCPlayerProfiles on BungeeCord or Velocity
+  # - SHARED_FOLDER: Reads player.dat directly from a shared/mounted proxy playerdata directory
+  mode: AUTO
+  # Path to the proxy player data directory (for SHARED_FOLDER or AUTO fallback)
+  playerdataPath: "../proxy/playerdata"
+  # Name of the secret file generated in the plugin folder
+  secretFile: "secret.pem"
+  # Request timeout in milliseconds when querying over plugin messaging
+  timeoutMillis: 2000
+  # If the proxy has no data for the player, fall back to checking the local server's player.dat
+  fallbackToLocalServer: true
+
 # This feature is to auto update the placeholder on every item
 # Configuration Explanation:
 # (autoRefresh)

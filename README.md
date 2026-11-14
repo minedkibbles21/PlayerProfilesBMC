@@ -174,6 +174,47 @@ items:
 
 ---
 
+## BungeeCord & Velocity Proxy Integration
+
+BMCPlayerProfiles scales across entire proxy networks (BungeeCord, Waterfall, and Velocity). Backend servers can query the proxy for a player's `player.dat` rather than relying only on local server data. This allows players on Hub or Lobby servers to inspect profiles and gear for players whose data resides on the proxy or other subservers.
+
+### 1. `secret.pem` Authentication & Linkage
+- When `proxy.enabled: true` in `config.yml`, BMCPlayerProfiles automatically generates a cryptographically secure 256-bit secret formatted in standard PEM:
+  ```
+  -----BEGIN BMC PROXY SECRET KEY-----
+  <Base64-encoded-secret>
+  -----END BMC PROXY SECRET KEY-----
+  ```
+- Copy `secret.pem` from the backend server's `plugins/BMCPlayerProfiles/` folder to your BungeeCord or Velocity proxy plugin directory:
+  - **BungeeCord**: `plugins/BMCPlayerProfiles/secret.pem`
+  - **Velocity**: `plugins/bmcplayerprofiles/secret.pem`
+- All queries transmitted over the plugin messaging channel `bmc:profiles` are authenticated using HMAC-SHA256 signatures verified by `secret.pem`.
+
+### 2. Backend Configuration (`config.yml`)
+```yaml
+proxy:
+  # Enable proxy player data mode (default: false)
+  enabled: true
+  # Mode: AUTO, PLUGIN_MESSAGING, or SHARED_FOLDER
+  mode: AUTO
+  # Path to proxy player data folder on disk (for SHARED_FOLDER or AUTO fallback)
+  playerdataPath: "../proxy/playerdata"
+  # File name of the generated secret key file
+  secretFile: "secret.pem"
+  # Request timeout in milliseconds when querying over plugin messaging
+  timeoutMillis: 2000
+  # Fall back to local server playerdata if not found on proxy
+  fallbackToLocalServer: true
+```
+
+### 3. Proxy Plugins
+Building the project automatically produces proxy companions in `target/`:
+- `target/BMCPlayerProfiles.jar` (Paper / Spigot backend server)
+- `target/BMCPlayerProfiles-Bungee.jar` (BungeeCord / Waterfall proxy)
+- `target/BMCPlayerProfiles-Velocity.jar` (Velocity proxy)
+
+---
+
 ## Building from Source
 
 Requires **JDK 25** and **Maven 3.9+**:

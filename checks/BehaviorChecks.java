@@ -268,6 +268,66 @@ public class BehaviorChecks {
         assert pluginDesc.contains("commands.bmcplayerprofilereload");
         assert pluginDesc.contains("commands.vprofile");
 
-        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, and bmcplayerprofile commands.");
+        // Verify proxy config options
+        assert !configDesc.getBoolean("proxy.enabled");
+        assert "AUTO".equalsIgnoreCase(configDesc.getString("proxy.mode"));
+        assert configDesc.getString("proxy.secretFile").equals("secret.pem");
+
+        // Verify SecretManager generation and verification
+        File testSecretDir = new File("build_test_secrets");
+        testSecretDir.mkdirs();
+        try {
+            com.muhammaddaffa.playerprofiles.proxy.SecretManager secretManager =
+                    new com.muhammaddaffa.playerprofiles.proxy.SecretManager(testSecretDir, "secret.pem");
+            secretManager.ensureSecretLoaded();
+            File secretFile = secretManager.getSecretFile();
+            assert secretFile.exists() : "secret.pem should be generated";
+            String secretFileText = java.nio.file.Files.readString(secretFile.toPath());
+            assert secretFileText.contains(com.muhammaddaffa.playerprofiles.proxy.SecretManager.PEM_HEADER);
+            assert secretFileText.contains(com.muhammaddaffa.playerprofiles.proxy.SecretManager.PEM_FOOTER);
+
+            byte[] sampleMessage = "test_player_payload".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] hmacSig = secretManager.computeHmac(sampleMessage);
+            assert secretManager.verifyHmac(sampleMessage, hmacSig) : "Valid HMAC signature should pass";
+            byte[] corruptedSig = hmacSig.clone();
+            corruptedSig[0] ^= 0xFF;
+            assert !secretManager.verifyHmac(sampleMessage, corruptedSig) : "Corrupted HMAC signature should fail";
+
+            // Verify ProxyProtocol packet serialization and parsing
+            UUID testQueryId = UUID.randomUUID();
+            UUID testTargetUuid = UUID.randomUUID();
+            byte[] serializedQuery = com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.serializeQuery(
+                    testQueryId, testTargetUuid, secretManager
+            );
+            com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.InboundQuery parsedQuery =
+                    com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.parseQuery(serializedQuery, secretManager);
+            assert parsedQuery != null && parsedQuery.authenticated() : "Parsed query should be authenticated";
+            assert testQueryId.equals(parsedQuery.queryIdentifier());
+            assert testTargetUuid.equals(parsedQuery.requestedPlayerUuid());
+
+            byte[] serializedResponse = com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.serializeResponse(
+                    testQueryId,
+                    com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.STATUS_SUCCESS,
+                    sampleMessage,
+                    secretManager
+            );
+            com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.InboundResponse parsedResponse =
+                    com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.parseResponse(serializedResponse, secretManager);
+            assert parsedResponse != null && parsedResponse.authenticated() : "Parsed response should be authenticated";
+            assert testQueryId.equals(parsedResponse.queryIdentifier());
+            assert parsedResponse.statusIndicator() == com.muhammaddaffa.playerprofiles.proxy.ProxyProtocol.STATUS_SUCCESS;
+            assert java.util.Arrays.equals(sampleMessage, parsedResponse.contentBytes());
+
+            // Verify ProxyStorageFinder
+            File testPlayerFile = new File(testSecretDir, testTargetUuid + ".dat");
+            testPlayerFile.createNewFile();
+            assert com.muhammaddaffa.playerprofiles.proxy.ProxyStorageFinder.locatePlayerFile(testSecretDir, testTargetUuid) != null;
+            testPlayerFile.delete();
+        } finally {
+            new File(testSecretDir, "secret.pem").delete();
+            testSecretDir.delete();
+        }
+
+        System.out.println("Behavior checks passed: profile state, item defaults/order, version boundaries, offline NBT parsing, Bedrock detection, 26.x equipment, directory paths, 30s combat timer, bmcplayerprofile commands, and proxy secret linkage.");
     }
 }

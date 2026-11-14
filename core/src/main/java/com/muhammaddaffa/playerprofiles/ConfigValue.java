@@ -33,6 +33,14 @@ public class ConfigValue {
     public static boolean ZMENU_ENABLED;
     public static String ZMENU_PROFILE_MENU;
 
+    // Proxy (BungeeCord & Velocity)
+    public static boolean PROXY_ENABLED;
+    public static String PROXY_MODE;
+    public static String PROXY_PLAYERDATA_PATH;
+    public static String PROXY_SECRET_FILE;
+    public static int PROXY_TIMEOUT_MILLIS;
+    public static boolean PROXY_FALLBACK_LOCAL;
+
     // Disabled worlds
     public static List<String> DISABLED_WORLDS;
     public static String DISABLED_WORLD_MESSAGE;
@@ -87,6 +95,13 @@ public class ConfigValue {
 
         ZMENU_ENABLED = config.getBoolean("zmenu.enabled", false);
         ZMENU_PROFILE_MENU = config.getString("zmenu.profileMenu", "profile");
+
+        PROXY_ENABLED = config.getBoolean("proxy.enabled", false);
+        PROXY_MODE = config.getString("proxy.mode", "AUTO");
+        PROXY_PLAYERDATA_PATH = config.getString("proxy.playerdataPath", "../proxy/playerdata");
+        PROXY_SECRET_FILE = config.getString("proxy.secretFile", "secret.pem");
+        PROXY_TIMEOUT_MILLIS = Math.max(500, config.getInt("proxy.timeoutMillis", 2000));
+        PROXY_FALLBACK_LOCAL = config.getBoolean("proxy.fallbackToLocalServer", true);
 
         DISABLED_WORLDS = config.getStringList("disabledWorlds.worlds");
         DISABLED_WORLD_MESSAGE = config.getString("disabledWorlds.message");
