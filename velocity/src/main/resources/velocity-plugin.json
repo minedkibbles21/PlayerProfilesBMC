@@ -1,0 +1,11 @@
+{
+  "id": "bmcplayerprofiles",
+  "name": "BMCPlayerProfiles",
+  "version": "${project.version}",
+  "description": "Velocity proxy companion for BMCPlayerProfiles to serve player.dat across the network",
+  "authors": [
+    "MinedKibbles21"
+  ],
+  "dependencies": [],
+  "main": "com.muhammaddaffa.playerprofiles.proxy.velocity.BMCPlayerProfilesVelocity"
+}
