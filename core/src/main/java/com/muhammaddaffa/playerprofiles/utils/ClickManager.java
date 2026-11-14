@@ -101,9 +101,9 @@ public class ClickManager {
         }
 
         if (actionTag.equalsIgnoreCase("[ZMENU] ") || actionTag.equalsIgnoreCase("[ZM] ")) {
-            String zmenuName = stripColors(parsedTask).trim();
-            String fullCommand = zmenuName.contains(" ") ? "zmenu open " + zmenuName : "zmenu open " + zmenuName + " " + player.getName();
-            Executor.sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), fullCommand));
+            player.closeInventory();
+            String fullCommand = resolveZMenuCommand(stripColors(parsedTask).trim(), player.getName());
+            Executor.syncLater(1L, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), fullCommand));
             return;
         }
 
@@ -115,5 +115,18 @@ public class ClickManager {
     private static String stripColors(String input) {
         if (input == null || input.isEmpty()) return "";
         return COLOR_STRIP_PATTERN.matcher(input).replaceAll("");
+    }
+
+    private static String resolveZMenuCommand(String zmenuName, String playerName) {
+        String[] tokens = zmenuName.split("\\s+");
+        String menu = tokens[0];
+        if (tokens.length == 1) {
+            return "zmenu open " + menu + " " + playerName;
+        }
+        if (tokens[1].equalsIgnoreCase(playerName)) {
+            return "zmenu open " + zmenuName;
+        }
+        String extraArguments = String.join(" ", Arrays.copyOfRange(tokens, 1, tokens.length));
+        return "zmenu open " + menu + " " + playerName + " " + extraArguments;
     }
 }
