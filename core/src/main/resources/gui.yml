@@ -1,4 +1,4 @@
-title: "&8{target}'s Profiles"
+title: "&8✦ &c&lB&b&lM&a&lC &8┃ &f&l{target}'s Profile &8✦"
 size: 54
 
 fillItems:
@@ -8,53 +8,31 @@ fillItems:
   lore: []
 
 items:
-  tradeTarget:
-    material: EMERALD
-    name: "&eTrade {target}"
-    slots: [ 24 ]
+  targetHead:
+    material: "head;{target}"
+    name: "&#FFD700&l{target}"
+    slots: [ 4 ]
     glowing: false
-    hideAttributes: false
+    hideAttributes: true
     customModelData: 0
     onlyOwner: false
     onlyVisitor: false
     usePermission: false
     permission: "custom.permission"
     lore:
-      - "&7Click to trade with &e{target}"
-    leftClickCommands:
-      - "[PLAYER] trade {target}"
-      - "[MESSAGE] &7Trade request has been sent to &e{target}"
-      - "[CLOSE]"
-    rightClickCommands:
-      - "[PLAYER] trade {target}"
-      - "[MESSAGE] &7Trade request has been sent to &e{target}"
-      - "[CLOSE]"
-  customMenu:
-    material: DIAMOND_AXE
-    name: "&ePunish {target}"
-    slots: [ 23 ]
-    glowing: false
-    hideAttributes: true
-    customModelData: 0
-    onlyOwner: false
-    onlyVisitor: false
-    usePermission: true
-    permission: "playerprofiles.punishgui"
-    lore:
-      - "&7This item can only be seen by the"
-      - "&7profile visitors with permission"
-      - "&7'playerprofiles.punishgui'"
-      - ""
-      - "&aClick to punish {target}"
-    leftClickCommands:
-      - "[OPENGUIMENU] punish-gui.yml"
-    rightClickCommands:
-      - "[OPENGUIMENU] punish-gui.yml"
+      - "&8* &7Username: &f{target}"
+      - "&8* &7Nickname: &f%essentials_nickname%"
+      - "&8* &7Rank: %luckperms_prefix%"
+      - "&8* &7Journey Level: &eTier %levelrewards_level%"
+
+  # ===================================================
+  # ARMOR & EQUIPMENT SLOTS
+  # ===================================================
   exampleHelmet:
     type: HELMET
     material: RED_STAINED_GLASS_PANE
     name: "&eHelmet"
-    slots: [10]
+    slots: [ 10 ]
     glowing: true
     hideAttributes: false
     customModelData: 0
@@ -64,6 +42,7 @@ items:
     permission: "custom.permission"
     lore:
       - "&cEmpty!"
+
   exampleChestplate:
     type: CHESTPLATE
     material: RED_STAINED_GLASS_PANE
@@ -78,34 +57,7 @@ items:
     permission: "custom.permission"
     lore:
       - "&cEmpty!"
-  exampleLeggings:
-    type: LEGGINGS
-    material: RED_STAINED_GLASS_PANE
-    name: "&eLeggings"
-    slots: [ 28 ]
-    glowing: true
-    hideAttributes: false
-    customModelData: 0
-    onlyOwner: false
-    onlyVisitor: false
-    usePermission: false
-    permission: "custom.permission"
-    lore:
-      - "&cEmpty!"
-  exampleBoots:
-    type: BOOTS
-    material: RED_STAINED_GLASS_PANE
-    name: "&eBoots"
-    slots: [ 37 ]
-    glowing: true
-    hideAttributes: false
-    customModelData: 0
-    onlyOwner: false
-    onlyVisitor: false
-    usePermission: false
-    permission: "custom.permission"
-    lore:
-      - "&cEmpty!"
+
   exampleMainHand:
     type: MAIN_HAND
     material: RED_STAINED_GLASS_PANE
@@ -120,6 +72,22 @@ items:
     permission: "custom.permission"
     lore:
       - "&cEmpty!"
+
+  exampleLeggings:
+    type: LEGGINGS
+    material: RED_STAINED_GLASS_PANE
+    name: "&eLeggings"
+    slots: [ 28 ]
+    glowing: true
+    hideAttributes: false
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: false
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&cEmpty!"
+
   exampleOffhand:
     type: OFF_HAND
     material: RED_STAINED_GLASS_PANE
@@ -134,16 +102,109 @@ items:
     permission: "custom.permission"
     lore:
       - "&cEmpty!"
-  profileStatus:
-    material: CHEST
-    name: "&6Profile Status"
-    slots: [ 52 ]
-    glowing: false
+
+  exampleBoots:
+    type: BOOTS
+    material: RED_STAINED_GLASS_PANE
+    name: "&eBoots"
+    slots: [ 37 ]
+    glowing: true
     hideAttributes: false
     customModelData: 0
-    onlyOwner: true
+    onlyOwner: false
     onlyVisitor: false
     usePermission: false
     permission: "custom.permission"
     lore:
-      - "{target_status}"
+      - "&cEmpty!"
+
+  tpaTarget:
+    material: EMERALD
+    name: "&#88CF17&lTPA Request"
+    slots: [ 25 ]
+    glowing: false
+    hideAttributes: true
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: true
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&7Send a teleport request to &e{target}&7."
+      - ""
+      - "&8* &aLeft-Click &7-> Send &e/tpa {target}"
+      - "&8* &dRight-Click &7-> Send &e/tpahere {target}"
+    leftClickCommands:
+      - "[PLAYER] tpa {target}"
+      - "[CLOSE]"
+    rightClickCommands:
+      - "[PLAYER] tpahere {target}"
+      - "[CLOSE]"
+
+  payTarget:
+    material: SUNFLOWER
+    name: "&#EDAE28&lPay {target}"
+    slots: [ 33 ]
+    glowing: false
+    hideAttributes: true
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: true
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&7Send coins directly to &e{target}&7."
+      - ""
+      - "&8* &aLeft-Click &7-> Quick Pay 10k &e/pay {target}"
+      - "&8* &eRight-Click &7-> Open Payment prompt"
+    leftClickCommands:
+      - "[PLAYER] pay {target} 10000"
+      - "[CLOSE]"
+    rightClickCommands:
+      - "[ZMENU] payments target:{target}"
+
+  ignoreTarget:
+    material: RED_DYE
+    name: "&#EF5350&lIgnore {target}"
+    slots: [ 34 ]
+    glowing: false
+    hideAttributes: true
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: true
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&7Block chat, whispers, and requests from &e{target}&7."
+      - ""
+      - "&8* &cLeft-Click &7-> Ignore / Unignore &e{target}"
+      - "&8* &eRight-Click &7-> Open Ignore Management menu"
+    leftClickCommands:
+      - "[PLAYER] ignore {target}"
+      - "[CLOSE]"
+    rightClickCommands:
+      - "[ZMENU] player_ignore_menu {player}"
+
+  zmenuProfile:
+    material: NETHER_STAR
+    name: "&#00E5FF&lBendersMC Profile Hub"
+    slots: [ 49 ]
+    glowing: true
+    hideAttributes: true
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: false
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&7Access your main BendersMC profile:"
+      - " &8* &fBending Elements & Combat Stats"
+      - " &8* &fDaily Streak & Quests"
+      - " &8* &fEconomy & Server Shops"
+      - " &8* &fClaims & Utilities"
+      - ""
+      - "&eClick to open Profile Hub ->"
+    leftClickCommands:
+      - "[ZMENU] profile"
+    rightClickCommands:
+      - "[ZMENU] profile"
