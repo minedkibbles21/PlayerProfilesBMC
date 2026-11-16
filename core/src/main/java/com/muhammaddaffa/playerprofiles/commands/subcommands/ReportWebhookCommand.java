@@ -36,7 +36,7 @@ public class ReportWebhookCommand extends SubCommand {
     @Override
     public @NotNull List<String> parseTabCompletion(PlayerProfiles plugin, CommandSender sender, String[] args) {
         if (args.length == 4) {
-            return Arrays.asList("Hacking", "Claim_Griefing", "Scamming", "Use_of_Slurs", "TP_Trapping", "Glitch_Abuse");
+            return Arrays.asList("Hacking", "Claim_Griefing", "Scamming", "Use_of_Slurs", "TP_Trapping", "Glitch_Abuse", "Other");
         }
         return new ArrayList<>();
     }

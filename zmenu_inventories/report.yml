@@ -38,7 +38,7 @@ items:
         - "&aOnly proceed if you have legitimate evidence!"
 
   category_hacking:
-    slot: 20
+    slot: 19
     item:
       material: NETHERITE_SWORD
       name: "&#FF5252&lHacking / Cheating"
@@ -56,7 +56,7 @@ items:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Hacking"
 
   category_claim_griefing:
-    slot: 21
+    slot: 20
     item:
       material: TNT
       name: "&#FF9100&lClaim Griefing"
@@ -74,7 +74,7 @@ items:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Claim_Griefing"
 
   category_scamming:
-    slot: 22
+    slot: 21
     item:
       material: GOLD_INGOT
       name: "&#FFD600&lScamming"
@@ -92,7 +92,7 @@ items:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Scamming"
 
   category_slurs:
-    slot: 23
+    slot: 22
     item:
       material: WRITABLE_BOOK
       name: "&#E040FB&lUse of Slurs / Hate Speech"
@@ -110,7 +110,7 @@ items:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Use_of_Slurs"
 
   category_tp_trapping:
-    slot: 24
+    slot: 23
     item:
       material: ENDER_PEARL
       name: "&#00E5FF&lTP Trapping / TP Killing"
@@ -127,7 +127,7 @@ items:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:TP_Trapping"
 
   category_glitch_abuse:
-    slot: 25
+    slot: 24
     item:
       material: REPEATER
       name: "&#76FF03&lGlitch Abuse / Exploits"
@@ -143,6 +143,24 @@ items:
       - type: console_command
         commands:
           - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Glitch_Abuse"
+
+  category_other:
+    slot: 25
+    item:
+      material: COMPASS
+      name: "&#B0BEC5&lOther Violation"
+      lore:
+        - "&7Report player for another rule violation:"
+        - " &8* &fInappropriate skin, cape, or name"
+        - " &8* &fPunishment or mute evasion"
+        - " &8* &fExcessive toxicity, spam, or harassment"
+        - " &8* &fOther server rule infractions"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Other"
 
   cancel_button:
     slot: 49
