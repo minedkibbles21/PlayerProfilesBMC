@@ -1,0 +1,155 @@
+name: "&8✦ &c&lBMC &8┃ &fReport Player &8✦"
+size: 54
+
+fillItem:
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&8 "
+
+items:
+  target_info:
+    slot: 4
+    item:
+      material: "head;%zmenu_argument_target%"
+      name: "&#FF1744&lReport %zmenu_argument_target%"
+      lore:
+        - "&7Select a violation category below to report"
+        - "&7this player directly to server staff."
+        - ""
+        - "&8* &7Target: &e%zmenu_argument_target%"
+        - "&8* &7Reporter: &f%player%"
+        - ""
+        - "&eClick a category below to submit evidence."
+
+  warning_banner:
+    slot: 40
+    item:
+      material: BARRIER
+      name: "&#FF1744&l⚠ FALSE REPORT WARNING"
+      lore:
+        - "&cSubmitting false, troll, or revenge reports"
+        - "&cis strictly against server rules."
+        - ""
+        - "&7Abusing the reporting system wastes staff time"
+        - "&7and will result in severe penalties:"
+        - " &8* &c1st Offense: &7Warning & temporary report mute"
+        - " &8* &c2nd Offense: &7Server ban for abuse"
+        - " &8* &cSevere/Spam: &7Permanent server blacklist"
+        - ""
+        - "&aOnly proceed if you have legitimate evidence!"
+
+  category_hacking:
+    slot: 20
+    item:
+      material: NETHERITE_SWORD
+      name: "&#FF5252&lHacking / Cheating"
+      lore:
+        - "&7Report player for unfair client modifications:"
+        - " &8* &fKillaura / Reach / Hitboxes"
+        - " &8* &fSpeed / Fly / Jesus / Timer"
+        - " &8* &fAuto-Clicker / Macro / FastBreak"
+        - " &8* &fX-Ray / ESP / Radar"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Hacking"
+
+  category_claim_griefing:
+    slot: 21
+    item:
+      material: TNT
+      name: "&#FF9100&lClaim Griefing"
+      lore:
+        - "&7Report player for damaging land or claims:"
+        - " &8* &fLava or water casting near claims"
+        - " &8* &fBypassing claim protection / pistons"
+        - " &8* &fStealing crops / destroying surroundings"
+        - " &8* &fDefacing nearby wilderness"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Claim_Griefing"
+
+  category_scamming:
+    slot: 22
+    item:
+      material: GOLD_INGOT
+      name: "&#FFD600&lScamming"
+      lore:
+        - "&7Report player for fraudulent economic actions:"
+        - " &8* &fTrade scamming / reneging agreements"
+        - " &8* &fDeceptive item lore or rename fraud"
+        - " &8* &fAuction house price swapping"
+        - " &8* &fUnauthorized gambling / casino tricks"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Scamming"
+
+  category_slurs:
+    slot: 23
+    item:
+      material: WRITABLE_BOOK
+      name: "&#E040FB&lUse of Slurs / Hate Speech"
+      lore:
+        - "&7Report player for unacceptable chat behavior:"
+        - " &8* &fRacial, ethnic, or homophobic slurs"
+        - " &8* &fSevere harassment, doxxing, or threats"
+        - " &8* &fEncouraging self-harm"
+        - " &8* &fBypassing chat filters / toxicity"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Use_of_Slurs"
+
+  category_tp_trapping:
+    slot: 24
+    item:
+      material: ENDER_PEARL
+      name: "&#00E5FF&lTP Trapping / TP Killing"
+      lore:
+        - "&7Report player for abusive teleportation tricks:"
+        - " &8* &fAccepting /tpa into lava, void, or traps"
+        - " &8* &fKilling players immediately after teleport"
+        - " &8* &fTrapping players in cobwebs or obsidian"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:TP_Trapping"
+
+  category_glitch_abuse:
+    slot: 25
+    item:
+      material: REPEATER
+      name: "&#76FF03&lGlitch Abuse / Exploits"
+      lore:
+        - "&7Report player for exploiting bugs and mechanics:"
+        - " &8* &fItem or economy duplication"
+        - " &8* &fPhasing through blocks or warzones"
+        - " &8* &fAbusing plugin or bending glitches"
+        - " &8* &fLag machines or intentional server disruption"
+        - ""
+        - "&eClick to enter reason ->"
+    actions:
+      - type: console_command
+        commands:
+          - "zmenu open report_reason %player% target:%zmenu_argument_target% type:Glitch_Abuse"
+
+  cancel_button:
+    slot: 49
+    item:
+      material: BARRIER
+      name: "&#EF5350&lCancel"
+      lore:
+        - "&7Click to cancel and close this menu."
+    actions:
+      - type: close

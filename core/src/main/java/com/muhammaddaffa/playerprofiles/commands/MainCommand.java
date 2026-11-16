@@ -8,6 +8,7 @@ import com.muhammaddaffa.playerprofiles.commands.subcommands.ListGUICommand;
 import com.muhammaddaffa.playerprofiles.commands.subcommands.OpenGUICommand;
 import com.muhammaddaffa.playerprofiles.commands.subcommands.OpenProfileCommand;
 import com.muhammaddaffa.playerprofiles.commands.subcommands.ReloadCommand;
+import com.muhammaddaffa.playerprofiles.commands.subcommands.ReportWebhookCommand;
 import com.muhammaddaffa.playerprofiles.commands.subcommands.SetCombatTimerCommand;
 import com.muhammaddaffa.playerprofiles.utils.Utils;
 import org.bukkit.Bukkit;
@@ -43,6 +44,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
         SetCombatTimerCommand combatTimerCmd = new SetCombatTimerCommand();
         this.subCommandMap.put("setcombattimer", combatTimerCmd);
         this.subCommandMap.put("combattimer", combatTimerCmd);
+        this.subCommandMap.put("reportwebhook", new ReportWebhookCommand());
     }
 
     public void registerThisCommand(){

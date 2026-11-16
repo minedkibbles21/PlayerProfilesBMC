@@ -118,6 +118,27 @@ items:
     lore:
       - "&cEmpty!"
 
+  reportTarget:
+    material: REDSTONE
+    name: "&#FF1744&lReport {target}"
+    slots: [ 24 ]
+    glowing: false
+    hideAttributes: true
+    customModelData: 0
+    onlyOwner: false
+    onlyVisitor: true
+    usePermission: false
+    permission: "custom.permission"
+    lore:
+      - "&7Report &e{target}&7 to online staff."
+      - ""
+      - "&8* &cClick &7-> Open Report Categories"
+    leftClickCommands:
+      - "[ZMENU] report target:{target}"
+    rightClickCommands:
+      - "[ZMENU] report target:{target}"
+
+
   tpaTarget:
     material: EMERALD
     name: "&#88CF17&lTPA Request"
@@ -185,7 +206,7 @@ items:
     rightClickCommands:
       - "[ZMENU] player_ignore_menu {player}"
 
-  zmenuProfile:
+  PlayerProfile:
     material: NETHER_STAR
     name: "&#00E5FF&lBendersMC Profile Hub"
     slots: [ 49 ]

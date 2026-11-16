@@ -41,6 +41,11 @@ public class ConfigValue {
     public static int PROXY_TIMEOUT_MILLIS;
     public static boolean PROXY_FALLBACK_LOCAL;
 
+    // Reports & Discord Webhook
+    public static String REPORT_WEBHOOK_URL;
+    public static boolean REPORT_NOTIFY_STAFF;
+    public static String REPORT_STAFF_PERMISSION;
+
     // Disabled worlds
     public static List<String> DISABLED_WORLDS;
     public static String DISABLED_WORLD_MESSAGE;
@@ -102,6 +107,10 @@ public class ConfigValue {
         PROXY_SECRET_FILE = config.getString("proxy.secretFile", "secret.pem");
         PROXY_TIMEOUT_MILLIS = Math.max(500, config.getInt("proxy.timeoutMillis", 2000));
         PROXY_FALLBACK_LOCAL = config.getBoolean("proxy.fallbackToLocalServer", true);
+
+        REPORT_WEBHOOK_URL = config.getString("reports.webhookUrl", "");
+        REPORT_NOTIFY_STAFF = config.getBoolean("reports.notifyStaffInGame", true);
+        REPORT_STAFF_PERMISSION = config.getString("reports.staffPermission", "playerprofiles.staff");
 
         DISABLED_WORLDS = config.getStringList("disabledWorlds.worlds");
         DISABLED_WORLD_MESSAGE = config.getString("disabledWorlds.message");

@@ -53,6 +53,17 @@ proxy:
   # If the proxy has no data for the player, fall back to checking the local server's player.dat
   fallbackToLocalServer: true
 
+# Player Reporting & Discord Webhook Integration
+# Dispatches report alerts to your Discord staff channel with a red embed border,
+# and optionally notifies online staff members in-game.
+reports:
+  # Paste your Discord webhook URL here (leave empty to disable Discord dispatch)
+  webhookUrl: ""
+  # Broadcast incoming reports to online staff members in-game
+  notifyStaffInGame: true
+  # Permission required to see in-game report broadcasts
+  staffPermission: "playerprofiles.staff"
+
 # This feature is to auto update the placeholder on every item
 # Configuration Explanation:
 # (autoRefresh)

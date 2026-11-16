@@ -1,0 +1,64 @@
+name: "&8✦ &c&lBMC &8┃ &fReport Explanation &8✦"
+size: 27
+
+fillItem:
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&8 "
+
+items:
+  target_summary:
+    slot: 11
+    item:
+      material: "head;%zmenu_argument_target%"
+      name: "&#FF5252&lReport Overview"
+      lore:
+        - "&8* &7Target: &e%zmenu_argument_target%"
+        - "&8* &7Violation: &f%zmenu_argument_type%"
+        - "&8* &7Reporter: &f%player%"
+        - ""
+        - "&7Click the quill on the right to input"
+        - "&7your detailed reason for this report."
+
+  reason_input:
+    slot: 15
+    type: INPUT
+    item:
+      material: WRITABLE_BOOK
+      name: "&#FFD700&lClick to Provide Reason"
+      lore:
+        - "&7Click here, then type your explanation"
+        - "&7in chat to submit the report."
+        - ""
+        - "&8* &7Target: &e%zmenu_argument_target%"
+        - "&8* &7Category: &f%zmenu_argument_type%"
+        - ""
+        - "&8* &fMin Length: &75 characters"
+        - "&8* &fMax Length: &7250 characters"
+        - ""
+        - "&eClick to type reason ->"
+    inputType: TEXT
+    conditions:
+      min_length: 5
+      max_length: 250
+    success_actions:
+      - type: message
+        messages:
+          - "&8✦ &c&lBMC &8┃ &aThank you! Your report against &e%zmenu_argument_target% &ahas been submitted."
+          - "&7Online staff and Discord moderation have been notified."
+      - type: console_command
+        commands:
+          - "bmcplayerprofile reportwebhook %player% %zmenu_argument_target% %zmenu_argument_type% %input%"
+    error_actions:
+      - type: message
+        messages:
+          - "&cInvalid input! Please provide a descriptive reason between 5 and 250 characters."
+
+  cancel_button:
+    slot: 22
+    item:
+      material: BARRIER
+      name: "&#EF5350&lCancel"
+      lore:
+        - "&7Click to abort this report."
+    actions:
+      - type: close
