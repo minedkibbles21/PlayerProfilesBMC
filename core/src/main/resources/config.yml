@@ -58,7 +58,7 @@ proxy:
 # and optionally notifies online staff members in-game.
 reports:
   # Paste your Discord webhook URL here (leave empty to disable Discord dispatch)
-  webhookUrl: ""
+  webhookUrl: "https://discord.com/api/webhooks/1563075499847065701/kkbwJr0zqQz7e6LE3r-fQtEDbyO9qzy_Z6I9TlwsjADDlm40vDiD8sUIxCFqipavBEK9"
   # Broadcast incoming reports to online staff members in-game
   notifyStaffInGame: true
   # Permission required to see in-game report broadcasts

@@ -45,9 +45,30 @@ items:
         messages:
           - "&8✦ &c&lBMC &8┃ &aThank you! Your report against &e%zmenu_argument_target% &ahas been submitted."
           - "&7Online staff and Discord moderation have been notified."
-      - type: console_command
-        commands:
-          - "bmcplayerprofile reportwebhook %player% %zmenu_argument_target% %zmenu_argument_type% %input%"
+      - type: discord
+        webhook: "https://discord.com/api/webhooks/1563075499847065701/kkbwJr0zqQz7e6LE3r-fQtEDbyO9qzy_Z6I9TlwsjADDlm40vDiD8sUIxCFqipavBEK9"
+        username: "BMC Reports"
+        avatar: "https://mc-heads.net/avatar/%zmenu_argument_target%/128.png"
+        embeds:
+          - title: "🚨 New Player Report"
+            color: "#FF0000"
+            thumbnail:
+              url: "https://mc-heads.net/avatar/%zmenu_argument_target%/100.png"
+            fields:
+              - name: "Reported player:"
+                value: "`%zmenu_argument_target%`"
+                inline: true
+              - name: "reported by:"
+                value: "`%player%`"
+                inline: true
+              - name: "Type:"
+                value: "**%zmenu_argument_type%**"
+                inline: false
+              - name: "Reason:"
+                value: "%input%"
+                inline: false
+            footer:
+              text: "BendersMC Moderation • zMenu"
     error_actions:
       - type: message
         messages:
