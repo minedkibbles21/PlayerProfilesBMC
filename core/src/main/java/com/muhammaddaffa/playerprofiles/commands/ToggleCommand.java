@@ -47,12 +47,14 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
             try {
                 commandMap = Bukkit.getCommandMap();
             } catch (Throwable ignored) {}
-            if (commandMap == null) {
+  if(commandMap == null) {
+
                 Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
                 bukkitCommandMap.setAccessible(true);
                 commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
             }
-            if (commandMap != null) {
+    if(commandMap != null) {
+
                 commandMap.register(COMMAND_NAME, plugin.getCommand(COMMAND_NAME));
             }
         } catch (Exception ex) {
@@ -68,8 +70,8 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
                     .replace("{permission}", "playerprofiles.admin")));
             return true;
         }
+      if(args.length == 0) {
 
-        if (args.length == 0) {
             sender.sendMessage(Utils.color("&cUsage: /toggleprofile <player>"));
             return true;
         }
@@ -92,7 +94,8 @@ public class ToggleCommand implements CommandExecutor, TabCompleter {
         }
 
         OfflinePlayer offlineTarget = PlayerDataLoader.resolveOfflinePlayer(targetName);
-        if (offlineTarget != null) {
+      if(offlineTarget != null) {
+
             Profile profile = plugin.getProfileManager().getOrCreate(offlineTarget.getUniqueId());
             boolean wasLocked = profile.isLocked();
             profile.setLocked(!wasLocked);

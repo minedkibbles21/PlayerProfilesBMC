@@ -43,12 +43,14 @@ public class LockCommand implements CommandExecutor, TabCompleter {
             try {
                 commandMap = Bukkit.getCommandMap();
             } catch (Throwable ignored) {}
-            if (commandMap == null) {
+  if(commandMap == null) {
+
                 Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
                 bukkitCommandMap.setAccessible(true);
                 commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
             }
-            if (commandMap != null) {
+      if(commandMap != null) {
+
                 commandMap.register(COMMAND_NAME, plugin.getCommand(COMMAND_NAME));
             }
         } catch (Exception ex) {
@@ -64,8 +66,8 @@ public class LockCommand implements CommandExecutor, TabCompleter {
                     .replace("{permission}", "playerprofiles.admin")));
             return true;
         }
+      if(args.length == 0) {
 
-        if (args.length == 0) {
             sender.sendMessage(Utils.color("&cUsage: /lockprofile <player>"));
             return true;
         }
@@ -81,7 +83,8 @@ public class LockCommand implements CommandExecutor, TabCompleter {
         }
 
         OfflinePlayer offlineTarget = PlayerDataLoader.resolveOfflinePlayer(targetName);
-        if (offlineTarget != null) {
+    if(offlineTarget != null) {
+
             plugin.getProfileManager().getOrCreate(offlineTarget.getUniqueId()).setLocked(true);
             String resolvedName = offlineTarget.getName() != null ? offlineTarget.getName() : targetName;
             sender.sendMessage(Utils.color(ConfigValue.LOCK_PROFILE_OTHERS
