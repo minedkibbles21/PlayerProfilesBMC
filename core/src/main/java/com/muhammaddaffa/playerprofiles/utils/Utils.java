@@ -24,7 +24,7 @@ public class Utils {
     public static String color(String message) {
         if (message == null) return null;
         if (message.isEmpty()) return "";
-        if (message.indexOf('{') != -1 && message.indexOf('#') != -1) {
+        if (message.indexOf("{") != -1 && message.indexOf("#") != -1) {
             message = BRACKET_HEX_PATTERN.matcher(message).replaceAll("<$1>");
         }
         return Common.color(message);
